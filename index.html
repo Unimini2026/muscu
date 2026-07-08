@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Programme Muscu</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #080c14; color: #f1f5f9; font-family: system-ui, -apple-system, sans-serif; max-width: 480px; margin: 0 auto; min-height: 100vh; }
+
+  .header { padding: 22px 16px 0; }
+  .header-label { font-size: 10px; letter-spacing: .2em; color: #334155; text-transform: uppercase; margin-bottom: 4px; }
+  .header-title { font-size: 22px; font-weight: 800; letter-spacing: -.03em; line-height: 1.2; }
+  .header-sub { color: #2d3f5a; }
+
+  .tabs { display: flex; padding: 14px 16px 0; border-bottom: 1px solid #1a2030; gap: 2px; overflow-x: auto; scrollbar-width: none; }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab-btn { flex: 1; padding: 8px 4px; border: none; background: none; font-size: 10px; font-weight: 700; letter-spacing: .08em; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; transition: color .15s; }
+
+  .session-meta { padding: 12px 16px 0; display: flex; justify-content: space-between; align-items: center; }
+  .session-subtitle { font-size: 11px; font-weight: 600; letter-spacing: .06em; }
+  .reset-btn { background: none; border: 1px solid #1e293b; border-radius: 6px; color: #334155; font-size: 10px; cursor: pointer; padding: 4px 10px; }
+
+  .progress-row { padding: 8px 16px 10px; display: flex; align-items: center; gap: 10px; }
+  .progress-bar-bg { flex: 1; height: 3px; background: #1e293b; border-radius: 99px; overflow: hidden; }
+  .progress-bar-fill { height: 100%; border-radius: 99px; transition: width .4s ease; }
+  .progress-count { font-size: 11px; color: #334155; font-variant-numeric: tabular-nums; }
+
+  .exercises { padding: 0 16px 20px; }
+
+  .ex-card { background: #0f1623; border: 1px solid #1a2030; border-radius: 12px; margin-bottom: 8px; overflow: hidden; transition: border-color .2s; }
+  .ex-card.completed { background: #08120e; border-color: #1a3d2b; }
+  .ex-card.expanded { border-color: var(--accent) !important; }
+
+  .ex-header { padding: 13px 14px; cursor: pointer; display: flex; align-items: center; gap: 12px; user-select: none; }
+  .ex-num { width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0; background: #131c2e; border: 1.5px solid #243044; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; color: #475569; transition: all .2s; }
+  .ex-num.done { background: #1a3d2b; border-color: #22c55e; color: #22c55e; }
+  .ex-num.active { background: #131c2e; }
+
+  .ex-info { flex: 1; min-width: 0; }
+  .ex-name { font-size: 14px; font-weight: 700; color: #e2e8f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ex-name.done { color: #475569; text-decoration: line-through; }
+  .ex-sets-row { display: flex; align-items: center; gap: 8px; margin-top: 3px; }
+  .ex-sets { font-size: 12px; font-weight: 700; }
+  .ex-series-prog { font-size: 11px; color: #475569; }
+
+  .ex-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+  .ex-rest-badge { font-size: 10px; color: #334155; }
+  .ex-chevron { font-size: 9px; color: #243044; }
+
+  .ex-body { border-top: 1px solid #131c2e; padding: 12px 14px; }
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px; }
+  .stat-cell { background: #080c14; border-radius: 8px; padding: 8px 10px; }
+  .stat-label { font-size: 9px; color: #334155; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 4px; }
+  .stat-value { font-size: 13px; font-weight: 700; color: #e2e8f0; line-height: 1.3; }
+
+  .note-box { background: #1a1408; border: 1px solid #713f12; border-radius: 8px; padding: 8px 10px; font-size: 12px; color: #fbbf24; margin-bottom: 10px; line-height: 1.5; }
+
+  .serie-btn { width: 100%; padding: 13px; border-radius: 10px; border: none; font-weight: 800; font-size: 14px; cursor: pointer; letter-spacing: .02em; transition: opacity .1s, transform .1s; }
+  .serie-btn:active { transform: scale(.98); }
+  .serie-btn:disabled { cursor: default; }
+
+  .nutri-section { padding: 16px 16px 32px; }
+  .nutri-title { font-size: 11px; font-weight: 700; letter-spacing: .1em; color: #f59e0b; margin-bottom: 16px; }
+  .nutri-card { background: #0f1623; border: 1px solid #1a2030; border-radius: 12px; overflow: hidden; margin-bottom: 12px; }
+  .nutri-card-header { padding: 10px 16px; border-bottom: 1px solid #1a2030; }
+  .nutri-card-label { font-size: 12px; font-weight: 800; letter-spacing: .1em; }
+  .nutri-row { display: flex; justify-content: space-between; padding: 11px 16px; border-bottom: 1px solid #131c2e; }
+  .nutri-row:last-child { border-bottom: none; }
+  .nutri-key { font-size: 13px; color: #64748b; }
+  .nutri-val { font-size: 13px; font-weight: 700; color: #e2e8f0; }
+
+  .timer-bar { position: fixed; top: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: #0c1220; border-bottom: 1px solid #1a2030; padding: 12px 16px; display: flex; align-items: center; gap: 14px; z-index: 50; box-shadow: 0 8px 32px #000a; }
+  body.timer-on { padding-top: 84px; }
+  .timer-info { flex: 1; min-width: 0; }
+  .timer-label { font-size: 10px; color: #334155; text-transform: uppercase; letter-spacing: .1em; }
+  .timer-exname { font-size: 13px; font-weight: 600; color: #94a3b8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 2px; }
+  .skip-btn { padding: 8px 14px; background: #1a2030; border: none; border-radius: 8px; color: #64748b; font-size: 12px; font-weight: 700; cursor: pointer; flex-shrink: 0; }
+
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-label">Programme Musculation <span style="color:#22c55e;font-weight:800">· v3</span></div>
+  <div class="header-title">Haut du corps<br><span class="header-sub">1 séance / 2 jours</span></div>
+</div>
+
+<div id="autoalarm-row" style="padding:10px 16px 0;display:flex;align-items:center;justify-content:space-between;gap:10px">
+  <span style="font-size:12px;color:#64748b">🔔 Alarme auto à chaque série</span>
+  <button id="autoalarm-btn" onclick="toggleAutoAlarm()"
+    style="border:none;border-radius:999px;padding:5px 12px;font-size:11px;font-weight:800;cursor:pointer"></button>
+</div>
+
+<div class="tabs" id="tabs"></div>
+<div id="session-content"></div>
+<div id="nutri-content" class="hidden"></div>
+
+<div class="timer-bar hidden" id="timer-bar">
+  <svg width="60" height="60" style="flex-shrink:0">
+    <circle cx="30" cy="30" r="26" fill="none" stroke="#1e293b" stroke-width="3.5"/>
+    <circle id="timer-ring" cx="30" cy="30" r="26" fill="none" stroke-width="3.5"
+      stroke-linecap="round" transform="rotate(-90 30 30)"
+      style="transition:stroke-dashoffset .9s linear"/>
+    <text id="timer-text" x="30" y="35" text-anchor="middle"
+      fill="#f1f5f9" font-size="14" font-weight="800" font-family="system-ui">0:00</text>
+  </svg>
+  <div class="timer-info">
+    <div class="timer-label" id="timer-label">Repos en cours</div>
+    <div class="timer-exname" id="timer-name"></div>
+  </div>
+  <button class="skip-btn" onclick="nativeAlarm()" style="background:#3a2d0a;color:#fbbf24">🔔</button>
+  <button class="skip-btn" onclick="skipTimer()">Skip →</button>
+</div>
+
+<script>
+const SESSIONS = [
+  {
+    id:'force', name:'FORCE', subtitle:'Charge max · Reps basses', color:'#ef4444',
+    exercises:[
+      {id:'f1',name:'Développé couché barre',sets:'4×4–6',weight:'22,5 kg / côté',rpe:'7–8',restDisplay:'2m30–3m',restSec:165},
+      {id:'f2',name:'Tractions assistées',sets:'4×4–6',weight:'14 kg (S1–S2) · 18 kg (S3–S4)',rpe:'7–8',restDisplay:'2m–2m30',restSec:135},
+      {id:'f3',name:'Row assis',sets:'3×6–8',weight:'59 kg (S1) · 52+2,3 kg (suite)',rpe:'7–8',restDisplay:'2m',restSec:120},
+      {id:'f4',name:'Développé incliné haltères',sets:'2×6–8',weight:'22 kg / main',rpe:'7–8',restDisplay:'1m45–2m',restSec:112},
+      {id:'f5',name:'Élévations latérales',sets:'3×12–20',weight:'6→5→4 kg / main',rpe:'8–9',restDisplay:'1m',restSec:60,note:'⚠️ Tension épaule : 4 kg (voire 3), RPE 6–7 max, mouvement lent.'},
+      {id:'f6',name:'Triceps corde',sets:'2×10–15',weight:'11,3 kg (5 plaques)',rpe:'8–9',restDisplay:'1m–1m15',restSec:67},
+      {id:'f7',name:'Curl incliné',sets:'2×10–15',weight:'12 → 8 kg',rpe:'8–9',restDisplay:'1m',restSec:60},
+      {id:'f8',name:'Cable crunch',sets:'3×10–15',weight:'38,3 kg (17e plaque)',rpe:'8',restDisplay:'1m',restSec:60},
+      {id:'f9',name:'Captain chair knee raise',sets:'3×10–15',weight:'—',rpe:'—',restDisplay:'1m',restSec:60},
+    ]
+  },
+  {
+    id:'volume', name:'VOLUME', subtitle:'Reps moyennes · Repos courts', color:'#3b82f6',
+    exercises:[
+      {id:'v1',name:'Overhead press',sets:'3×6–10',weight:'Barre + 10 kg / côté',rpe:'8',restDisplay:'1m45–2m',restSec:112},
+      {id:'v2',name:'Tirage vertical neutre',sets:'3×8–12',weight:'52+2,3 kg',rpe:'8',restDisplay:'1m30–2m',restSec:105},
+      {id:'v3',name:'Développé haltères plat',sets:'3×8–12',weight:'22 kg / main',rpe:'8–9',restDisplay:'1m30–2m',restSec:105},
+      {id:'v4',name:'Row assis poulie',sets:'3×8–12',weight:'52 kg',rpe:'8',restDisplay:'1m30',restSec:90},
+      {id:'v5',name:'Reverse pec deck',sets:'3×12–20',weight:'39 kg · Siège pos. 2/3/4',rpe:'8–9',restDisplay:'1m–1m15',restSec:67},
+      {id:'v6',name:'Dips assistés',sets:'2×8–12',weight:'9 kg assistance (7e plaque)',rpe:'8–9',restDisplay:'1m30',restSec:90},
+      {id:'v7',name:'Curl EZ',sets:'2×8–12',weight:'25 kg',rpe:'8–9',restDisplay:'1m',restSec:60},
+      {id:'v8',name:'Élévations latérales',sets:'2×15–25',weight:'5 kg / main',rpe:'9',restDisplay:'45s–1m',restSec:52},
+      {id:'v9',name:'Cable crunch',sets:'3×10–15',weight:'38,3 kg (17e plaque)',rpe:'8',restDisplay:'1m',restSec:60},
+      {id:'v10',name:'Captain chair knee raise',sets:'3×10–15',weight:'—',rpe:'—',restDisplay:'1m',restSec:60},
+    ]
+  },
+  {
+    id:'hyper', name:'HYPER', subtitle:'Reps hautes · Focus tension', color:'#a855f7',
+    exercises:[
+      {id:'h1',name:'Supine press / Chest press',sets:'3×8–12',weight:'30 kg / côté',rpe:'8–9',restDisplay:'1m30–2m',restSec:105},
+      {id:'h2',name:'Tirage vertical variante',sets:'3×8–12',weight:'52+2,3 kg · Prise large ou supination',rpe:'8',restDisplay:'1m30',restSec:90},
+      {id:'h3',name:'Row unilatéral haltère',sets:'3×10–12',weight:'20 kg',rpe:'8',restDisplay:'1m30',restSec:90},
+      {id:'h4',name:'Chest fly machine',sets:'3×12–15',weight:'73 kg (dernière 66) · Siège 5/6/7',rpe:'8–9',restDisplay:'1m',restSec:60},
+      {id:'h5',name:'Élévations latérales',sets:'3×15–20',weight:'6 kg / main',rpe:'9',restDisplay:'45s–1m',restSec:52,note:'⚠️ Tension épaule : 4 kg (voire 3), RPE 6–7 max.'},
+      {id:'h6',name:'Reverse fly unilatéral poulie',sets:'3×12–20',weight:'2,3+1,25 kg · Réglage 16',rpe:'8–9',restDisplay:'1m',restSec:60,note:'Ne pas bouger le poignet.'},
+      {id:'h7',name:'Curl incliné',sets:'3×10–12',weight:'8 kg · Banc 45° (pos. 3)',rpe:'8–9',restDisplay:'1m',restSec:60},
+      {id:'h8',name:'Triceps corde',sets:'3×12–15',weight:'11,3 kg',rpe:'8–9',restDisplay:'1m',restSec:60},
+      {id:'h9',name:'Cable crunch',sets:'3×10–15',weight:'38,3 kg (17e plaque)',rpe:'8',restDisplay:'1m',restSec:60},
+      {id:'h10',name:'Captain chair knee raise',sets:'3×10–15',weight:'—',rpe:'—',restDisplay:'1m',restSec:60},
+    ]
+  },
+  {
+    id:'rehab', name:'RÉÉDU', subtitle:'Genou · 10–12 min en fin de séance', color:'#10b981',
+    exercises:[
+      {id:'r1',name:'Spanish squat',sets:'2×30–45s',weight:'—',rpe:'—',restDisplay:'1m',restSec:60},
+      {id:'r2',name:'Sit-to-stand',sets:'2×8',weight:'—',rpe:'—',restDisplay:'1m',restSec:60},
+      {id:'r3',name:'Marche inclinée',sets:'1×5–10min',weight:'Inclinaison 2–4% · 5 km/h',rpe:'—',restDisplay:'—',restSec:0,note:'Arrêt immédiat si douleur.'},
+    ]
+  },
+];
+
+const NUTRI = [
+  {label:'ENTRAÎNEMENT', color:'#ef4444', items:[['Calories','2 400–2 500 kcal'],['Protéines','170 g'],['Créatine','5 g / jour']]},
+  {label:'REPOS', color:'#3b82f6', items:[['Calories','2 100–2 200 kcal'],['Protéines','170 g'],['Créatine','5 g / jour']]},
+];
+
+let tab = 0;
+let expandedId = null;
+let seriesDone = {};
+let timerInterval = null;
+// Timestamp-based timer state
+let timerEnd = 0;      // wall-clock ms when rest ends
+let timerTotal = 0;    // total rest duration in sec
+let timerExName = '';
+let timerDone = false;  // true when rest finished but bar still showing "terminé"
+
+// ---- Persistence (localStorage works here: standalone file, not a Claude artifact) ----
+const STORE_KEY = 'muscu_tracker_v1';
+function saveState() {
+  try {
+    localStorage.setItem(STORE_KEY, JSON.stringify({
+      seriesDone,
+      timer: timerEnd > 0 ? { end: timerEnd, total: timerTotal, name: timerExName } : null
+    }));
+  } catch (e) {}
+}
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    if (data.seriesDone) seriesDone = data.seriesDone;
+    if (data.timer && data.timer.end > Date.now()) {
+      timerEnd = data.timer.end;
+      timerTotal = data.timer.total;
+      timerExName = data.timer.name;
+      resumeTimer();
+    }
+  } catch (e) {}
+}
+
+function parseTarget(sets) { const m = sets.match(/^(\d+)/); return m ? parseInt(m[1]) : 0; }
+function getKey(t, id) { return `${t}-${id}`; }
+function exState(t, ex) {
+  const key = getKey(t, ex.id);
+  const done = seriesDone[key] || 0;
+  const target = parseTarget(ex.sets);
+  return { done, target, completed: target > 0 && done >= target };
+}
+function fmt(s) { return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`; }
+
+function remainingSec() {
+  return Math.max(0, Math.ceil((timerEnd - Date.now()) / 1000));
+}
+
+function startTimer(ex) {
+  if (!ex.restSec || ex.restSec <= 0) return;
+  clearInterval(timerInterval);
+  timerDone = false;
+  timerTotal = ex.restSec;
+  timerExName = ex.name;
+  timerEnd = Date.now() + ex.restSec * 1000;
+  saveState();
+  showTimerBar();
+  tick();
+  timerInterval = setInterval(tick, 500);
+}
+
+function resumeTimer() {
+  clearInterval(timerInterval);
+  timerDone = false;
+  showTimerBar();
+  tick();
+  timerInterval = setInterval(tick, 500);
+}
+
+function showTimerBar() {
+  document.getElementById('timer-bar').classList.remove('hidden');
+  document.body.classList.add('timer-on');
+}
+
+function tick() {
+  const rem = remainingSec();
+  updateTimerUI(rem);
+  if (rem <= 0 && !timerDone) finishTimer();
+}
+
+function finishTimer() {
+  clearInterval(timerInterval);
+  timerDone = true;
+  timerEnd = 0;
+  saveState();
+  try { beep(); } catch (e) {}
+  try { if (navigator.vibrate) navigator.vibrate([200,100,200]); } catch (e) {}
+  document.getElementById('timer-label').textContent = 'Repos terminé';
+  document.getElementById('timer-name').textContent = 'Série suivante';
+  document.getElementById('timer-text').textContent = '0:00';
+  setTimeout(hideTimerBar, 4000);
+}
+
+function updateTimerUI(rem) {
+  document.getElementById('timer-text').textContent = fmt(rem);
+  document.getElementById('timer-label').textContent = 'Repos en cours';
+  document.getElementById('timer-name').textContent = timerExName;
+  const R=26, C=2*Math.PI*R;
+  const ring = document.getElementById('timer-ring');
+  const color = tab < 4 ? SESSIONS[tab].color : '#f59e0b';
+  ring.setAttribute('stroke', color);
+  ring.setAttribute('stroke-dasharray', C);
+  ring.setAttribute('stroke-dashoffset', timerTotal ? C*(1 - rem/timerTotal) : 0);
+}
+
+function hideTimerBar() {
+  document.getElementById('timer-bar').classList.add('hidden');
+  document.body.classList.remove('timer-on');
+}
+
+function skipTimer() {
+  clearInterval(timerInterval);
+  timerEnd = 0; timerDone = false;
+  saveState();
+  hideTimerBar();
+}
+
+let audioCtx = null;
+function beep() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  const o = audioCtx.createOscillator();
+  const g = audioCtx.createGain();
+  o.connect(g); g.connect(audioCtx.destination);
+  o.frequency.value = 880; o.type = 'sine';
+  g.gain.setValueAtTime(0.001, audioCtx.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.3, audioCtx.currentTime + 0.02);
+  g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+  o.start(); o.stop(audioCtx.currentTime + 0.4);
+}
+
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && timerEnd > 0) tick();
+});
+
+// Launch the native iOS timer via Apple Shortcuts (rings even when locked)
+function launchShortcut(seconds) {
+  if (!seconds || seconds <= 0) return;
+  window.location.href = 'shortcuts://run-shortcut?name=Repos&input=text&text=' + seconds;
+}
+
+// Manual bell button: uses remaining time on the current rest
+function nativeAlarm() {
+  const rem = remainingSec();
+  launchShortcut(rem);
+}
+
+// Auto-alarm toggle (persisted)
+let autoAlarm = false;
+function loadAutoAlarm() {
+  try { autoAlarm = localStorage.getItem('muscu_auto_alarm') === '1'; } catch (e) {}
+}
+function toggleAutoAlarm() {
+  autoAlarm = !autoAlarm;
+  try { localStorage.setItem('muscu_auto_alarm', autoAlarm ? '1' : '0'); } catch (e) {}
+  renderTabs();
+}
+
+function addSerie(tabIdx, exId, e) {
+  e.stopPropagation();
+  const ex = SESSIONS[tabIdx].exercises.find(x => x.id === exId);
+  if (!ex) return;
+  const st = exState(tabIdx, ex);
+  if (st.completed) return;
+  seriesDone[getKey(tabIdx, exId)] = st.done + 1;
+  startTimer(ex);
+  saveState();
+  renderSession();
+  // Fire the native alarm automatically if enabled and this exercise has a rest
+  if (autoAlarm && ex.restSec > 0) launchShortcut(ex.restSec);
+}
+
+function resetSession() {
+  const p = `${tab}-`;
+  Object.keys(seriesDone).forEach(k => { if (k.startsWith(p)) delete seriesDone[k]; });
+  expandedId = null;
+  saveState();
+  renderSession();
+}
+
+function toggleExpand(id) {
+  expandedId = expandedId === id ? null : id;
+  renderSession();
+}
+
+function setTab(i) {
+  tab = i; expandedId = null;
+  document.getElementById('session-content').classList.toggle('hidden', i === 4);
+  document.getElementById('nutri-content').classList.toggle('hidden', i !== 4);
+  renderTabs();
+  if (i < 4) renderSession(); else renderNutri();
+}
+
+function renderTabs() {
+  const tabs = [...SESSIONS.map(s=>({name:s.name,color:s.color})), {name:'NUTRI',color:'#f59e0b'}];
+  document.getElementById('tabs').innerHTML = tabs.map((s,i) =>
+    `<button class="tab-btn" onclick="setTab(${i})"
+      style="color:${i===tab?s.color:'#334155'};border-bottom-color:${i===tab?s.color:'transparent'}">${s.name}</button>`
+  ).join('');
+  const btn = document.getElementById('autoalarm-btn');
+  if (btn) {
+    btn.textContent = autoAlarm ? 'Activée' : 'Désactivée';
+    btn.style.background = autoAlarm ? '#1a3d2b' : '#1a2030';
+    btn.style.color = autoAlarm ? '#22c55e' : '#64748b';
+  }
+}
+
+function renderSession() {
+  if (tab >= 4) return;
+  const s = SESSIONS[tab];
+  const exs = s.exercises;
+  const completed = exs.filter(ex => exState(tab,ex).completed).length;
+  const pct = exs.length ? (completed/exs.length)*100 : 0;
+
+  let html = `
+    <div class="session-meta">
+      <div class="session-subtitle" style="color:${s.color}">${s.subtitle}</div>
+      <button class="reset-btn" onclick="resetSession()">↺ Reset</button>
+    </div>
+    <div class="progress-row">
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" style="width:${pct}%;background:${s.color}"></div>
+      </div>
+      <div class="progress-count">${completed}/${exs.length}</div>
+    </div>
+    <div class="exercises">`;
+
+  exs.forEach((ex, idx) => {
+    const {done, target, completed: isDone} = exState(tab, ex);
+    const isExp = expandedId === ex.id;
+    const numStyle = isDone
+      ? 'done'
+      : isExp ? `active" style="border-color:${s.color};color:${s.color}` : '';
+
+    let btnLabel = 'Démarrer · Série 1';
+    if (done > 0 && !isDone) btnLabel = `Série ${done+1}/${target} — Fait ✓`;
+    if (isDone) btnLabel = `✓ Terminé (${target}/${target})`;
+
+    html += `
+      <div class="ex-card${isDone?' completed':''}${isExp?' expanded':''}" style="--accent:${s.color}">
+        <div class="ex-header" onclick="toggleExpand('${ex.id}')">
+          <div class="ex-num ${numStyle}">${isDone ? '✓' : idx+1}</div>
+          <div class="ex-info">
+            <div class="ex-name${isDone?' done':''}">${ex.name}</div>
+            <div class="ex-sets-row">
+              <span class="ex-sets" style="color:${s.color}">${ex.sets}</span>
+              ${done > 0 && !isDone ? `<span class="ex-series-prog">· ${done}/${target}</span>` : ''}
+            </div>
+          </div>
+          <div class="ex-right">
+            ${ex.restDisplay !== '—' ? `<span class="ex-rest-badge">⏱ ${ex.restDisplay}</span>` : ''}
+            <span class="ex-chevron">${isExp ? '▲' : '▼'}</span>
+          </div>
+        </div>
+        ${isExp ? `
+          <div class="ex-body">
+            <div class="stats-grid">
+              ${ex.weight !== '—' ? `<div class="stat-cell"><div class="stat-label">Charge</div><div class="stat-value">${ex.weight}</div></div>` : ''}
+              ${ex.rpe !== '—' ? `<div class="stat-cell"><div class="stat-label">RPE</div><div class="stat-value">${ex.rpe}</div></div>` : ''}
+              ${ex.restDisplay !== '—' ? `<div class="stat-cell"><div class="stat-label">Repos</div><div class="stat-value">${ex.restDisplay}</div></div>` : ''}
+            </div>
+            ${ex.note ? `<div class="note-box">${ex.note}</div>` : ''}
+            ${target > 0 ? `
+              <button class="serie-btn${isDone?' done-state':''}"
+                onclick="addSerie(${tab},'${ex.id}',event)"
+                style="${!isDone ? `background:${s.color};color:#fff` : 'background:#1a3d2b;color:#22c55e'}"
+                ${isDone ? 'disabled' : ''}
+              >${btnLabel}</button>
+            ` : ''}
+          </div>
+        ` : ''}
+      </div>`;
+  });
+
+  html += '</div>';
+  document.getElementById('session-content').innerHTML = html;
+}
+
+function renderNutri() {
+  let html = `<div class="nutri-section"><div class="nutri-title">MACROS & SUPPLÉMENTS</div>`;
+  NUTRI.forEach(day => {
+    html += `<div class="nutri-card">
+      <div class="nutri-card-header" style="background:${day.color}22">
+        <div class="nutri-card-label" style="color:${day.color}">JOURS ${day.label}</div>
+      </div>
+      ${day.items.map(([k,v],i) => `
+        <div class="nutri-row" ${i===day.items.length-1?'style="border-bottom:none"':''}>
+          <span class="nutri-key">${k}</span>
+          <span class="nutri-val">${v}</span>
+        </div>`).join('')}
+    </div>`;
+  });
+  html += '</div>';
+  document.getElementById('nutri-content').innerHTML = html;
+}
+
+loadState();
+loadAutoAlarm();
+renderTabs();
+renderSession();
+</script>
+</body>
+</html>
