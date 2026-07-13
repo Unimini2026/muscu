@@ -149,39 +149,39 @@
 <script>
 const SESSIONS = [
   { id:'force', name:'FORCE', subtitle:'Charge max · Reps basses', color:'#ef4444', exercises:[
-    {id:'f1',name:'Développé couché barre',sets:'4×4–6',ref:'22,5 kg / côté',restDisplay:'2m30–3m',restSec:165},
-    {id:'f2',name:'Tractions assistées',sets:'4×4–6',ref:'14 kg (S1–S2) · 18 kg (S3–S4)',restDisplay:'2m–2m30',restSec:135},
-    {id:'f3',name:'Row assis',sets:'3×6–8',ref:'59 kg (S1) · 52+2,3 kg',restDisplay:'2m',restSec:120},
-    {id:'f4',name:'Développé incliné haltères',sets:'2×6–8',ref:'22 kg / main',restDisplay:'1m45–2m',restSec:112},
-    {id:'f5',name:'Élévations latérales',sets:'3×12–20',ref:'6→5→4 kg / main',restDisplay:'1m',restSec:60,note:'⚠️ Tension épaule : 4 kg (voire 3), RPE 6–7 max, mouvement lent.'},
-    {id:'f6',name:'Triceps corde',sets:'2×10–15',ref:'11,3 kg (5 plaques)',restDisplay:'1m–1m15',restSec:67},
-    {id:'f7',name:'Curl incliné',sets:'2×10–15',ref:'12 → 8 kg',restDisplay:'1m',restSec:60},
-    {id:'f8',name:'Cable crunch',sets:'3×10–15',ref:'38,3 kg (17e plaque)',restDisplay:'1m',restSec:60},
-    {id:'f9',name:'Captain chair knee raise',sets:'3×10–15',ref:'—',restDisplay:'1m',restSec:60},
+    {id:'f1',name:'Développé couché barre',sets:'4×4–6',ref:'22,5 kg / côté',rir:'2–3',restDisplay:'2m30–3m',restSec:165},
+    {id:'f2',name:'Tractions assistées',sets:'4×4–6',ref:'14 kg (S1–S2) · 18 kg (S3–S4)',rir:'2–3',restDisplay:'2m–2m30',restSec:135},
+    {id:'f3',name:'Row assis',sets:'3×6–8',ref:'59 kg (S1) · 52+2,3 kg',rir:'2–3',restDisplay:'2m',restSec:120},
+    {id:'f4',name:'Développé incliné haltères',sets:'2×6–8',ref:'22 kg / main',rir:'2',restDisplay:'1m45–2m',restSec:112},
+    {id:'f5',name:'Élévations latérales',sets:'3×12–20',ref:'6→5→4 kg / main',rir:'0–1',restDisplay:'1m',restSec:60,note:'⚠️ Tension épaule : 4 kg (voire 3), RPE 6–7 max, mouvement lent.'},
+    {id:'f6',name:'Triceps corde',sets:'2×10–15',ref:'11,3 kg (5 plaques)',rir:'0–1',restDisplay:'1m–1m15',restSec:67},
+    {id:'f7',name:'Curl incliné',sets:'2×10–15',ref:'12 → 8 kg',rir:'0–1',restDisplay:'1m',restSec:60},
+    {id:'f8',name:'Cable crunch',sets:'3×10–15',ref:'38,3 kg (17e plaque)',rir:'1',restDisplay:'1m',restSec:60},
+    {id:'f9',name:'Captain chair knee raise',sets:'3×10–15',ref:'—',rir:'1',restDisplay:'1m',restSec:60},
   ]},
   { id:'volume', name:'VOLUME', subtitle:'Reps moyennes · Repos courts', color:'#3b82f6', exercises:[
-    {id:'v1',name:'Overhead press',sets:'3×6–10',ref:'Barre + 10 kg / côté',restDisplay:'1m45–2m',restSec:112},
-    {id:'v2',name:'Tirage vertical neutre',sets:'3×8–12',ref:'52+2,3 kg',restDisplay:'1m30–2m',restSec:105},
-    {id:'v3',name:'Développé haltères plat',sets:'3×8–12',ref:'22 kg / main',restDisplay:'1m30–2m',restSec:105},
-    {id:'v4',name:'Row assis poulie',sets:'3×8–12',ref:'52 kg',restDisplay:'1m30',restSec:90},
-    {id:'v5',name:'Reverse pec deck',sets:'3×12–20',ref:'39 kg · Siège pos. 2/3/4',restDisplay:'1m–1m15',restSec:67},
-    {id:'v6',name:'Dips assistés',sets:'2×8–12',ref:'9 kg assistance (7e plaque)',restDisplay:'1m30',restSec:90},
-    {id:'v7',name:'Curl EZ',sets:'2×8–12',ref:'25 kg',restDisplay:'1m',restSec:60},
-    {id:'v8',name:'Élévations latérales',sets:'2×15–25',ref:'5 kg / main',restDisplay:'45s–1m',restSec:52},
-    {id:'v9',name:'Cable crunch',sets:'3×10–15',ref:'38,3 kg (17e plaque)',restDisplay:'1m',restSec:60},
-    {id:'v10',name:'Captain chair knee raise',sets:'3×10–15',ref:'—',restDisplay:'1m',restSec:60},
+    {id:'v1',name:'Overhead press',sets:'3×6–10',ref:'Barre + 10 kg / côté',rir:'1–2',restDisplay:'1m45–2m',restSec:112},
+    {id:'v2',name:'Tirage vertical neutre',sets:'3×8–12',ref:'52+2,3 kg',rir:'1–2',restDisplay:'1m30–2m',restSec:105},
+    {id:'v3',name:'Développé haltères plat',sets:'3×8–12',ref:'22 kg / main',rir:'1–2',restDisplay:'1m30–2m',restSec:105},
+    {id:'v4',name:'Row assis poulie',sets:'3×8–12',ref:'52 kg',rir:'1–2',restDisplay:'1m30',restSec:90},
+    {id:'v5',name:'Reverse pec deck',sets:'3×12–20',ref:'39 kg · Siège pos. 2/3/4',rir:'0–1',restDisplay:'1m–1m15',restSec:67},
+    {id:'v6',name:'Dips assistés',sets:'2×8–12',ref:'9 kg assistance (7e plaque)',rir:'1–2',restDisplay:'1m30',restSec:90},
+    {id:'v7',name:'Curl EZ',sets:'2×8–12',ref:'25 kg',rir:'0–1',restDisplay:'1m',restSec:60},
+    {id:'v8',name:'Élévations latérales',sets:'2×15–25',ref:'5 kg / main',rir:'0–1',restDisplay:'45s–1m',restSec:52},
+    {id:'v9',name:'Cable crunch',sets:'3×10–15',ref:'38,3 kg (17e plaque)',rir:'1',restDisplay:'1m',restSec:60},
+    {id:'v10',name:'Captain chair knee raise',sets:'3×10–15',ref:'—',rir:'1',restDisplay:'1m',restSec:60},
   ]},
   { id:'hyper', name:'HYPER', subtitle:'Reps hautes · Focus tension', color:'#a855f7', exercises:[
-    {id:'h1',name:'Supine press / Chest press',sets:'3×8–12',ref:'30 kg / côté',restDisplay:'1m30–2m',restSec:105},
-    {id:'h2',name:'Tirage vertical variante',sets:'3×8–12',ref:'52+2,3 kg · Large ou supination',restDisplay:'1m30',restSec:90},
-    {id:'h3',name:'Row unilatéral haltère',sets:'3×10–12',ref:'20 kg',restDisplay:'1m30',restSec:90},
-    {id:'h4',name:'Chest fly machine',sets:'3×12–15',ref:'73 kg (dernière 66) · Siège 5/6/7',restDisplay:'1m',restSec:60},
-    {id:'h5',name:'Élévations latérales',sets:'3×15–20',ref:'6 kg / main',restDisplay:'45s–1m',restSec:52,note:'⚠️ Tension épaule : 4 kg (voire 3), RPE 6–7 max.'},
-    {id:'h6',name:'Reverse fly unilatéral poulie',sets:'3×12–20',ref:'2,3+1,25 kg · Réglage 16',restDisplay:'1m',restSec:60,note:'Ne pas bouger le poignet.'},
-    {id:'h7',name:'Curl incliné',sets:'3×10–12',ref:'8 kg · Banc 45° (pos. 3)',restDisplay:'1m',restSec:60},
-    {id:'h8',name:'Triceps corde',sets:'3×12–15',ref:'11,3 kg',restDisplay:'1m',restSec:60},
-    {id:'h9',name:'Cable crunch',sets:'3×10–15',ref:'38,3 kg (17e plaque)',restDisplay:'1m',restSec:60},
-    {id:'h10',name:'Captain chair knee raise',sets:'3×10–15',ref:'—',restDisplay:'1m',restSec:60},
+    {id:'h1',name:'Supine press / Chest press',sets:'3×8–12',ref:'30 kg / côté',rir:'1',restDisplay:'1m30–2m',restSec:105},
+    {id:'h2',name:'Tirage vertical variante',sets:'3×8–12',ref:'52+2,3 kg · Large ou supination',rir:'1',restDisplay:'1m30',restSec:90},
+    {id:'h3',name:'Row unilatéral haltère',sets:'3×10–12',ref:'20 kg',rir:'1',restDisplay:'1m30',restSec:90},
+    {id:'h4',name:'Chest fly machine',sets:'3×12–15',ref:'73 kg (dernière 66) · Siège 5/6/7',rir:'0–1',restDisplay:'1m',restSec:60},
+    {id:'h5',name:'Élévations latérales',sets:'3×15–20',ref:'6 kg / main',rir:'0–1',restDisplay:'45s–1m',restSec:52,note:'⚠️ Tension épaule : 4 kg (voire 3), RPE 6–7 max.'},
+    {id:'h6',name:'Reverse fly unilatéral poulie',sets:'3×12–20',ref:'2,3+1,25 kg · Réglage 16',rir:'0–1',restDisplay:'1m',restSec:60,note:'Ne pas bouger le poignet.'},
+    {id:'h7',name:'Curl incliné',sets:'3×10–12',ref:'8 kg · Banc 45° (pos. 3)',rir:'0–1',restDisplay:'1m',restSec:60},
+    {id:'h8',name:'Triceps corde',sets:'3×12–15',ref:'11,3 kg',rir:'0–1',restDisplay:'1m',restSec:60},
+    {id:'h9',name:'Cable crunch',sets:'3×10–15',ref:'38,3 kg (17e plaque)',rir:'1',restDisplay:'1m',restSec:60},
+    {id:'h10',name:'Captain chair knee raise',sets:'3×10–15',ref:'—',rir:'1',restDisplay:'1m',restSec:60},
   ]},
   { id:'rehab', name:'RÉÉDU', subtitle:'Genou · 10–12 min en fin de séance', color:'#10b981', exercises:[
     {id:'r1',name:'Spanish squat',sets:'2×30–45s',ref:'—',restDisplay:'1m',restSec:60},
@@ -384,6 +384,7 @@ function renderSession(){
             <div class="ex-name${isDone?' done':''}">${ex.name}</div>
             <div class="ex-sets-row">
               <span class="ex-sets" style="color:${accent}">${ex.sets}</span>
+              ${ex.rir?`<span class="ex-series-prog" style="color:#64748b">· RIR ${ex.rir}</span>`:''}
               ${done.length>0&&!isDone?`<span class="ex-series-prog">· ${done.length}/${target}</span>`:''}
             </div>
           </div>
@@ -401,6 +402,7 @@ function renderSession(){
 
       html+=`<div class="ex-body">
         <div class="ref-line">Prog : <b>${ex.ref}</b></div>
+        ${ex.rir?`<div class="ref-line">Réserve visée : <b style="color:${accent}">${ex.rir} rep${ex.rir==='1'?'':'s'} en réserve</b></div>`:''}
         ${lastStr}`;
 
       for(let i=0;i<target;i++){
