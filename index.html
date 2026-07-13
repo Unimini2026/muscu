@@ -191,8 +191,9 @@ const SESSIONS = [
 ];
 
 const NUTRI = [
-  {label:'ENTRAÎNEMENT', color:'#ef4444', items:[['Calories','2 400–2 500 kcal'],['Protéines','170 g'],['Créatine','5 g / jour']]},
-  {label:'REPOS', color:'#3b82f6', items:[['Calories','2 100–2 200 kcal'],['Protéines','170 g'],['Créatine','5 g / jour']]},
+  {label:'ENTRAÎNEMENT · SÈCHE', color:'#ef4444', items:[['Calories','2 000–2 100 kcal'],['Protéines','170 g'],['Créatine','5 g / jour']]},
+  {label:'REPOS · SÈCHE', color:'#3b82f6', items:[['Calories','1 800–1 900 kcal'],['Protéines','170 g'],['Créatine','5 g / jour']]},
+  {label:'OBJECTIF SÈCHE', color:'#10b981', items:[['Durée','8–12 semaines'],['Perte visée','0,3–0,5 kg / sem'],['Ajustement','selon la balance'],['Plancher','≥ 1 800 kcal']]},
 ];
 
 // ---------- State ----------
@@ -437,7 +438,7 @@ function renderSession(){
 }
 
 function renderNutri(){
-  let html=`<div class="nutri-section"><div class="nutri-title">MACROS & SUPPLÉMENTS</div>`;
+  let html=`<div class="nutri-section"><div class="nutri-title">MACROS · PHASE SÈCHE</div>`;
   NUTRI.forEach(day=>{
     html+=`<div class="nutri-card">
       <div class="nutri-card-header" style="background:${day.color}22"><div class="nutri-card-label" style="color:${day.color}">JOURS ${day.label}</div></div>
