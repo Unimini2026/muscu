@@ -101,6 +101,26 @@
   .data-btn { flex: 1; padding: 11px; border-radius: 10px; border: 1px solid #1e293b; background: #0f1623; color: #94a3b8; font-size: 12px; font-weight: 700; cursor: pointer; }
   .empty { text-align: center; color: #334155; font-size: 13px; padding: 40px 20px; }
 
+  /* Poids */
+  .weight-section { padding: 16px 16px 40px; }
+  .weight-title { font-size: 11px; font-weight: 700; letter-spacing: .1em; color: #06b6d4; margin-bottom: 4px; }
+  .weight-sub { font-size: 11px; color: #475569; margin-bottom: 16px; }
+  .weight-input-row { display: flex; gap: 8px; margin-bottom: 18px; }
+  .weight-input { flex: 1; background: #0f1623; border: 1px solid #1a2030; border-radius: 10px; color: #e2e8f0; font-size: 18px; font-weight: 700; padding: 12px; text-align: center; }
+  .weight-input:focus { outline: none; border-color: #06b6d4; }
+  .weight-add-btn { background: #06b6d4; color: #04202a; border: none; border-radius: 10px; padding: 12px 20px; font-size: 14px; font-weight: 800; cursor: pointer; }
+  .weight-stats-row { display: flex; gap: 8px; margin-bottom: 18px; }
+  .weight-stat { flex: 1; background: #0f1623; border: 1px solid #1a2030; border-radius: 10px; padding: 10px; text-align: center; }
+  .weight-stat-label { font-size: 9px; color: #334155; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 4px; }
+  .weight-stat-value { font-size: 16px; font-weight: 800; color: #e2e8f0; }
+  .weight-chart-wrap { background: #0f1623; border: 1px solid #1a2030; border-radius: 12px; padding: 12px; margin-bottom: 18px; }
+  .weight-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: #0f1623; border: 1px solid #1a2030; border-radius: 10px; margin-bottom: 7px; }
+  .weight-row-date { font-size: 13px; color: #94a3b8; }
+  .weight-row-right { display: flex; align-items: center; gap: 10px; }
+  .weight-row-val { font-size: 15px; font-weight: 800; color: #e2e8f0; }
+  .weight-row-delta { font-size: 11px; font-weight: 700; }
+  .weight-del { background: none; border: none; color: #334155; font-size: 16px; cursor: pointer; padding: 2px 6px; }
+
   /* Timer bar */
   .timer-bar { position: fixed; top: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: #0c1220; border-bottom: 1px solid #1a2030; padding: 12px 16px; display: flex; align-items: center; gap: 12px; z-index: 50; box-shadow: 0 8px 32px #000a; }
   body.timer-on { padding-top: 84px; }
@@ -115,7 +135,7 @@
 <body>
 
 <div class="header">
-  <div class="header-label">Programme Musculation <span style="color:#22c55e;font-weight:800">· v4</span></div>
+  <div class="header-label">Programme Musculation <span style="color:#22c55e;font-weight:800">· v5</span></div>
   <div class="header-title">Haut du corps<br><span class="header-sub">1 séance / 2 jours</span></div>
 </div>
 
@@ -128,6 +148,7 @@
 <div id="session-content"></div>
 <div id="nutri-content" class="hidden"></div>
 <div id="hist-content" class="hidden"></div>
+<div id="weight-content" class="hidden"></div>
 
 <div class="timer-bar hidden" id="timer-bar">
   <svg width="56" height="56" style="flex-shrink:0">
@@ -184,9 +205,9 @@ const SESSIONS = [
     {id:'h10',name:'Captain chair knee raise',sets:'3×10–15',ref:'—',rir:'1',restDisplay:'1m',restSec:60},
   ]},
   { id:'rehab', name:'RÉÉDU', subtitle:'Genou · 10–12 min en fin de séance', color:'#10b981', exercises:[
-    {id:'r1',name:'Spanish squat',sets:'2×30–45s',ref:'—',restDisplay:'1m',restSec:60},
-    {id:'r2',name:'Sit-to-stand',sets:'2×8',ref:'—',restDisplay:'1m',restSec:60},
-    {id:'r3',name:'Marche inclinée',sets:'1×5–10min',ref:'Inclinaison 2–4% · 5 km/h',restDisplay:'—',restSec:0,note:'Arrêt immédiat si douleur.'},
+    {id:'r1',name:'Spanish squat',sets:'2×30–45s',ref:'—',unit:'sec',trackWeight:false,restDisplay:'1m',restSec:60},
+    {id:'r2',name:'Sit-to-stand',sets:'2×8',ref:'—',unit:'reps',trackWeight:false,restDisplay:'1m',restSec:60},
+    {id:'r3',name:'Marche inclinée',sets:'1×5–10min',ref:'Inclinaison 2–4% · 5 km/h',unit:'min',trackWeight:false,restDisplay:'—',restSec:0,note:'Arrêt immédiat si douleur.'},
   ]},
 ];
 
@@ -205,17 +226,19 @@ let current = { entries: {}, startedAt: null };  // { entries: { exId: [{w,r}] }
 let history = [];       // [ { date, ts, entries: { exId: [{w,r}] } } ]
 
 let expandedHist = null;
+let bodyWeights = []; // [ { ts, weight } ] sorted by ts asc
 
 // Timer
 let timerInterval = null, timerEnd = 0, timerTotal = 0, timerExName = '', timerDone = false;
 
-const K_PREFS='muscu_v4_prefs', K_W='muscu_v4_weights', K_CUR='muscu_v4_current', K_HIST='muscu_v4_history';
+const K_PREFS='muscu_v4_prefs', K_W='muscu_v4_weights', K_CUR='muscu_v4_current', K_HIST='muscu_v4_history', K_BW='muscu_v4_bodyweights';
 
 function save() {
   try {
     localStorage.setItem(K_W, JSON.stringify(lastWeights));
     localStorage.setItem(K_CUR, JSON.stringify(current));
     localStorage.setItem(K_HIST, JSON.stringify(history));
+    localStorage.setItem(K_BW, JSON.stringify(bodyWeights));
     localStorage.setItem(K_PREFS, JSON.stringify({ autoAlarm, timer: timerEnd>Date.now()?{end:timerEnd,total:timerTotal,name:timerExName}:null }));
   } catch(e) {}
 }
@@ -225,6 +248,8 @@ function load() {
     current = JSON.parse(localStorage.getItem(K_CUR) || '{"entries":{},"startedAt":null}');
     if (!current.entries) current.entries = {};
     history = JSON.parse(localStorage.getItem(K_HIST) || '[]');
+    bodyWeights = JSON.parse(localStorage.getItem(K_BW) || '[]');
+    bodyWeights.sort((a,b)=>a.ts-b.ts);
     const p = JSON.parse(localStorage.getItem(K_PREFS) || '{}');
     autoAlarm = !!p.autoAlarm;
     if (p.timer && p.timer.end > Date.now()) { timerEnd=p.timer.end; timerTotal=p.timer.total; timerExName=p.timer.name; resumeTimer(); }
@@ -234,7 +259,8 @@ function load() {
 // ---------- Helpers ----------
 function parseTarget(sets){ const m=sets.match(/^(\d+)/); return m?parseInt(m[1]):0; }
 function topReps(sets){ const after=sets.split('×')[1]||''; const nums=after.match(/\d+/g); return nums?nums[nums.length-1]:''; }
-function hasWeight(ex){ return ex.ref !== '—'; }
+function hasWeight(ex){ if(ex.trackWeight===false) return false; return ex.ref !== '—'; }
+function unitLabel(ex){ return ex.unit || 'reps'; }
 
 function loggedSets(exId){ return (current.entries[exId]||[]); }
 function exComplete(ex){ const t=parseTarget(ex.sets); return t>0 && loggedSets(ex.id).length>=t; }
@@ -337,13 +363,14 @@ function setTab(i){
   document.getElementById('session-content').classList.toggle('hidden', i>=4);
   document.getElementById('nutri-content').classList.toggle('hidden', i!==4);
   document.getElementById('hist-content').classList.toggle('hidden', i!==5);
+  document.getElementById('weight-content').classList.toggle('hidden', i!==6);
   renderTabs();
-  if(i<4) renderSession(); else if(i===4) renderNutri(); else renderHist();
+  if(i<4) renderSession(); else if(i===4) renderNutri(); else if(i===5) renderHist(); else renderWeight();
 }
 
 // ---------- Render ----------
 function renderTabs(){
-  const items=[...SESSIONS.map(s=>({name:s.name,color:s.color})), {name:'NUTRI',color:'#f59e0b'}, {name:'HISTO',color:'#a855f7'}];
+  const items=[...SESSIONS.map(s=>({name:s.name,color:s.color})), {name:'NUTRI',color:'#f59e0b'}, {name:'HISTO',color:'#a855f7'}, {name:'POIDS',color:'#06b6d4'}];
   document.getElementById('tabs').innerHTML=items.map((s,i)=>
     `<button class="tab-btn" onclick="setTab(${i})" style="color:${i===tab?s.color:'#334155'};border-bottom-color:${i===tab?s.color:'transparent'}">${s.name}</button>`
   ).join('');
@@ -397,7 +424,7 @@ function renderSession(){
     if(isExp){
       const lastH=lastHistoryFor(ex.id);
       let lastStr='';
-      if(lastH){ const arr=lastH.entries[ex.id].map(x=> hw?`${x.w||'?'}×${x.r||'?'}`:`${x.r||'✓'}`).join(' · ');
+      if(lastH){ const arr=lastH.entries[ex.id].map(x=> hw?`${x.w||'?'}×${x.r||'?'}`:`${x.r||'?'} ${unitLabel(ex)}`).join(' · ');
         lastStr=`<div class="ref-last">Dernière (${fmtDate(lastH.ts)}) : ${arr}</div>`; }
 
       html+=`<div class="ex-body">
@@ -415,7 +442,7 @@ function renderSession(){
             <div class="set-row">
               <span class="set-label">${i+1}</span>
               <div style="flex:1;font-size:13px;color:#22c55e;font-weight:700">
-                ${hw?`${logged.w||'?'} kg × ${logged.r||'?'} reps`:`${logged.r||'✓'} ${ex.ref==='—'&&ex.sets.includes('s')?'':'reps'}`}
+                ${hw?`${logged.w||'?'} kg × ${logged.r||'?'} reps`:`${logged.r||'?'} ${unitLabel(ex)}`}
               </div>
               ${i===done.length-1?`<button class="set-done-btn" style="background:#1e293b;color:#94a3b8" onclick="unlogSet('${ex.id}')">↩︎</button>`:`<div class="set-done-btn" style="background:#1a3d2b;color:#22c55e;display:flex;align-items:center;justify-content:center">✓</div>`}
             </div>`;
@@ -424,7 +451,7 @@ function renderSession(){
             <div class="set-row" style="${isCurrent?'':'opacity:.5'}">
               <span class="set-label">${i+1}</span>
               ${hw?`<div class="set-field"><span class="set-field-label">kg</span><input class="set-input" id="w-${ex.id}-${i}" inputmode="decimal" value="${wDefault}" placeholder="kg" ${isCurrent?'':'disabled'}></div>`:''}
-              <div class="set-field"><span class="set-field-label">reps</span><input class="set-input" id="r-${ex.id}-${i}" inputmode="numeric" value="${rDefault}" placeholder="reps" ${isCurrent?'':'disabled'}></div>
+              <div class="set-field"><span class="set-field-label">${unitLabel(ex)}</span><input class="set-input" id="r-${ex.id}-${i}" inputmode="numeric" value="${rDefault}" placeholder="${unitLabel(ex)}" ${isCurrent?'':'disabled'}></div>
               <button class="set-done-btn" style="background:${isCurrent?accent:'#1a2030'};color:${isCurrent?'#fff':'#475569'}" ${isCurrent?'':'disabled'} onclick="logSet(${tab},'${ex.id}')">✓</button>
             </div>`;
         }
@@ -451,7 +478,7 @@ function renderNutri(){
   document.getElementById('nutri-content').innerHTML=html;
 }
 
-function exNameById(id){ for(const s of SESSIONS){ const e=s.exercises.find(x=>x.id===id); if(e) return {name:e.name, hw:hasWeight(e)}; } return {name:id,hw:true}; }
+function exNameById(id){ for(const s of SESSIONS){ const e=s.exercises.find(x=>x.id===id); if(e) return {name:e.name, hw:hasWeight(e), unit:unitLabel(e)}; } return {name:id,hw:true,unit:'reps'}; }
 
 function renderHist(){
   let html=`<div class="hist-section">
@@ -478,7 +505,7 @@ function renderHist(){
         html+=`<div class="hist-body">`;
         exIds.forEach(id=>{
           const info=exNameById(id);
-          const sets=h.entries[id].map(x=> info.hw?`${x.w||'?'}×${x.r||'?'}`:`${x.r||'✓'}`).join(' · ');
+          const sets=h.entries[id].map(x=> info.hw?`${x.w||'?'}×${x.r||'?'}`:`${x.r||'?'} ${info.unit}`).join(' · ');
           html+=`<div class="hist-ex"><span class="hist-ex-name">${info.name}</span> <span class="hist-ex-sets">${sets}</span></div>`;
         });
         html+=`<button class="reset-btn" style="margin-top:6px" onclick="deleteHist(${i})">Supprimer cette séance</button>`;
@@ -493,8 +520,98 @@ function renderHist(){
 function toggleHist(i){ expandedHist=expandedHist===i?null:i; renderHist(); }
 function deleteHist(i){ if(confirm('Supprimer cette séance de l\'historique ?')){ history.splice(i,1); expandedHist=null; save(); renderHist(); } }
 
+// ---------- Poids ----------
+function addWeightEntry(){
+  const input=document.getElementById('weight-new-input');
+  const val=parseFloat((input.value||'').replace(',','.'));
+  if(!val || val<=0 || val>300){ alert('Entre un poids valide (kg).'); return; }
+  const today=new Date(); today.setHours(12,0,0,0);
+  const todayKey=today.toISOString().slice(0,10);
+  // Replace an entry already logged today, otherwise add new
+  const existingIdx=bodyWeights.findIndex(e=> new Date(e.ts).toISOString().slice(0,10)===todayKey);
+  if(existingIdx>=0){ bodyWeights[existingIdx].weight=val; }
+  else { bodyWeights.push({ ts: today.getTime(), weight: val }); }
+  bodyWeights.sort((a,b)=>a.ts-b.ts);
+  save(); renderWeight();
+}
+function deleteWeightEntry(idx){
+  if(confirm('Supprimer cette pesée ?')){ bodyWeights.splice(idx,1); save(); renderWeight(); }
+}
+function weightChartSVG(entries){
+  if(entries.length<2) return '';
+  const W=100, H=100, PAD=6;
+  const ws=entries.map(e=>e.weight);
+  let min=Math.min(...ws), max=Math.max(...ws);
+  if(min===max){ min-=1; max+=1; }
+  const range=max-min;
+  const stepX=(W-PAD*2)/(entries.length-1);
+  const pts=entries.map((e,i)=>{
+    const x=PAD+i*stepX;
+    const y=PAD+(H-PAD*2)*(1-(e.weight-min)/range);
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  }).join(' ');
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:140px;display:block">
+    <polyline points="${pts}" fill="none" stroke="#06b6d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    ${entries.map((e,i)=>{ const x=PAD+i*stepX; const y=PAD+(H-PAD*2)*(1-(e.weight-min)/range); return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="1.6" fill="#06b6d4"/>`; }).join('')}
+  </svg>`;
+}
+function renderWeight(){
+  const sorted=[...bodyWeights].sort((a,b)=>a.ts-b.ts);
+  const last=sorted[sorted.length-1];
+  const prev=sorted[sorted.length-2];
+  // approx entry from ~7 days ago
+  let weekAgoEntry=null;
+  if(last){
+    const target=last.ts-7*86400000;
+    for(let i=sorted.length-1;i>=0;i--){ if(sorted[i].ts<=target){ weekAgoEntry=sorted[i]; break; } }
+  }
+  const deltaPrev = (last&&prev)? (last.weight-prev.weight) : null;
+  const deltaWeek = (last&&weekAgoEntry)? (last.weight-weekAgoEntry.weight) : null;
+
+  let html=`<div class="weight-section">
+    <div class="weight-title">SUIVI DU POIDS</div>
+    <div class="weight-sub">${bodyWeights.length} pesée${bodyWeights.length>1?'s':''} enregistrée${bodyWeights.length>1?'s':''}</div>
+
+    <div class="weight-input-row">
+      <input class="weight-input" id="weight-new-input" inputmode="decimal" placeholder="ex: 86,5" value="${last?String(last.weight).replace('.',','):''}">
+      <button class="weight-add-btn" onclick="addWeightEntry()">Enregistrer</button>
+    </div>`;
+
+  if(last){
+    html+=`<div class="weight-stats-row">
+      <div class="weight-stat"><div class="weight-stat-label">Dernier</div><div class="weight-stat-value">${String(last.weight).replace('.',',')} kg</div></div>
+      <div class="weight-stat"><div class="weight-stat-label">Vs dernière pesée</div><div class="weight-stat-value" style="color:${deltaPrev==null?'#475569':deltaPrev<=0?'#22c55e':'#f59e0b'}">${deltaPrev==null?'—':(deltaPrev>0?'+':'')+deltaPrev.toFixed(1).replace('.',',')+' kg'}</div></div>
+      <div class="weight-stat"><div class="weight-stat-label">Vs il y a 7j</div><div class="weight-stat-value" style="color:${deltaWeek==null?'#475569':deltaWeek<=0?'#22c55e':'#f59e0b'}">${deltaWeek==null?'—':(deltaWeek>0?'+':'')+deltaWeek.toFixed(1).replace('.',',')+' kg'}</div></div>
+    </div>`;
+  }
+
+  if(sorted.length>=2){
+    html+=`<div class="weight-chart-wrap">${weightChartSVG(sorted.slice(-20))}</div>`;
+  }
+
+  if(sorted.length===0){
+    html+=`<div class="empty">Aucune pesée enregistrée.<br>Ajoute ton poids ci-dessus après ta pesée du matin.</div>`;
+  } else {
+    for(let i=sorted.length-1;i>=0;i--){
+      const e=sorted[i];
+      const p=sorted[i-1];
+      const d = p ? (e.weight-p.weight) : null;
+      html+=`<div class="weight-row">
+        <span class="weight-row-date">${new Date(e.ts).toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'short'})}</span>
+        <div class="weight-row-right">
+          ${d!=null?`<span class="weight-row-delta" style="color:${d<=0?'#22c55e':'#f59e0b'}">${d>0?'+':''}${d.toFixed(1).replace('.',',')}</span>`:''}
+          <span class="weight-row-val">${String(e.weight).replace('.',',')} kg</span>
+          <button class="weight-del" onclick="deleteWeightEntry(${i})">✕</button>
+        </div>
+      </div>`;
+    }
+  }
+  html+=`</div>`;
+  document.getElementById('weight-content').innerHTML=html;
+}
+
 function exportData(){
-  const blob=new Blob([JSON.stringify({weights:lastWeights,history},null,2)],{type:'application/json'});
+  const blob=new Blob([JSON.stringify({weights:lastWeights,history,bodyWeights},null,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
   a.href=url; a.download=`muscu-sauvegarde-${new Date().toISOString().slice(0,10)}.json`;
@@ -509,6 +626,7 @@ function importData(e){
       const data=JSON.parse(reader.result);
       if(data.history) history=data.history;
       if(data.weights) lastWeights=data.weights;
+      if(data.bodyWeights) { bodyWeights=data.bodyWeights; bodyWeights.sort((a,b)=>a.ts-b.ts); }
       save(); renderHist();
       alert('Sauvegarde importée ✅');
     }catch(err){ alert('Fichier invalide.'); }
