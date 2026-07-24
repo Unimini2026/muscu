@@ -479,27 +479,32 @@ function renderNutri(){
   document.getElementById('nutri-content').innerHTML=html;
 }
 
-// Échauffement en séries montantes, calculé depuis la charge de travail
-function roundPlate(x){ return (Math.round(x/1.25)*1.25).toString().replace('.',','); }
+// Échauffement en séries montantes : pourcentages + bouton de repos adapté
+const WARMUP_STEPS = [
+  {pct:'50 %', reps:'8 reps', rest:45,  restLabel:'45 s'},
+  {pct:'70 %', reps:'5 reps', rest:45,  restLabel:'45 s'},
+  {pct:'85 %', reps:'3 reps', rest:105, restLabel:'1 m 45'},
+];
 function warmupBlock(ex, accent){
-  const wRaw = (lastWeights[ex.id]||'').toString().replace(',','.');
-  const w = parseFloat(wRaw);
-  let rows;
-  if(w && w>0){
-    rows = [
-      ['~'+roundPlate(w*0.5)+' kg', '8 reps'],
-      ['~'+roundPlate(w*0.7)+' kg', '5 reps'],
-      ['~'+roundPlate(w*0.85)+' kg', '3 reps'],
-    ];
-  } else {
-    rows = [['~50 %','8 reps'],['~70 %','5 reps'],['~85 %','3 reps']];
-  }
   return `<div style="background:#0b1220;border:1px solid #1e293b;border-radius:8px;padding:9px 11px;margin:8px 0">
-    <div style="font-size:9px;color:#334155;text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px">Échauffement · séries montantes</div>
-    ${rows.map((r,i)=>`<div style="font-size:12px;color:#94a3b8;margin-bottom:3px">
-      <span style="color:#475569">S${i+1}</span> &nbsp;<b style="color:#cbd5e1">${r[0]}</b> × ${r[1]}</div>`).join('')}
-    <div style="font-size:10px;color:#475569;margin-top:6px;line-height:1.4">Repos 30–60 s entre ces séries, puis <b style="color:${accent}">1 m 30–2 m</b> avant la 1re série de travail.</div>
+    <div style="font-size:9px;color:#334155;text-transform:uppercase;letter-spacing:.1em;margin-bottom:7px">Échauffement · séries montantes</div>
+    ${WARMUP_STEPS.map((s,i)=>`
+      <div class="set-row" style="margin-bottom:5px">
+        <span class="set-label" style="color:#334155">É${i+1}</span>
+        <div style="flex:1;font-size:13px;color:#cbd5e1;font-weight:700">${s.pct} <span style="color:#64748b;font-weight:400">× ${s.reps}</span></div>
+        <span style="font-size:10px;color:#475569;margin-right:6px">⏱ ${s.restLabel}</span>
+        <button class="set-done-btn" style="background:#1e293b;color:${accent};width:38px;height:34px;font-size:14px"
+          onclick="event.stopPropagation(); warmupRest('${ex.name.replace(/'/g,"\\'")}',${s.rest})">✓</button>
+      </div>`).join('')}
+    <div style="font-size:10px;color:#475569;margin-top:5px;line-height:1.4">Pourcentages de ta charge de travail. Le dernier repos (<b style="color:${accent}">1 m 45</b>) précède ta 1re série de travail.</div>
   </div>`;
+}
+function warmupRest(name, seconds){
+  clearInterval(timerInterval);
+  timerDone=false; timerTotal=seconds; timerExName='Échauffement · '+name;
+  timerEnd=Date.now()+seconds*1000; save(); showTimerBar(); tickTimer();
+  timerInterval=setInterval(tickTimer,500);
+  if(autoAlarm) launchShortcut(seconds);
 }
 
 function exNameById(id){ for(const s of SESSIONS){ const e=s.exercises.find(x=>x.id===id); if(e) return {name:e.name, hw:hasWeight(e), unit:unitLabel(e)}; } return {name:id,hw:true,unit:'reps'}; }
