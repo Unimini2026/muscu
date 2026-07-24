@@ -135,7 +135,7 @@
 <body>
 
 <div class="header">
-  <div class="header-label">Programme Musculation <span style="color:#22c55e;font-weight:800">· v6</span></div>
+  <div class="header-label">Programme Musculation <span style="color:#22c55e;font-weight:800">· v7</span></div>
   <div class="header-title">Haut du corps<br><span class="header-sub">1 séance / 2 jours</span></div>
 </div>
 
@@ -170,7 +170,7 @@
 <script>
 const SESSIONS = [
   { id:'force', name:'FORCE', subtitle:'Charge max · Reps basses', color:'#ef4444', exercises:[
-    {id:'f1',name:'Développé couché barre',sets:'4×4–6',ref:'22,5 kg / côté',rir:'2–3',restDisplay:'2m30–3m',restSec:165},
+    {id:'f1',name:'Développé couché barre',sets:'4×4–6',ref:'22,5 kg / côté',rir:'2–3',warmup:true,restDisplay:'2m30–3m',restSec:165},
     {id:'f2',name:'Tractions assistées',sets:'4×4–6',ref:'14 kg (S1–S2) · 18 kg (S3–S4)',rir:'2–3',restDisplay:'2m–2m30',restSec:135},
     {id:'f3',name:'Row assis',sets:'3×6–8',ref:'59 kg (S1) · 52+2,3 kg',rir:'2–3',restDisplay:'2m',restSec:120},
     {id:'f4',name:'Développé incliné haltères',sets:'2×6–8',ref:'22 kg / main',rir:'2',restDisplay:'1m45–2m',restSec:112},
@@ -181,7 +181,7 @@ const SESSIONS = [
     {id:'f9',name:'Captain chair knee raise',sets:'3×10–15',ref:'—',rir:'1',restDisplay:'1m',restSec:60},
   ]},
   { id:'volume', name:'VOLUME', subtitle:'Reps moyennes · Repos courts', color:'#3b82f6', exercises:[
-    {id:'v1',name:'Overhead press',sets:'3×6–10',ref:'Barre + 10 kg / côté',rir:'1–2',restDisplay:'1m45–2m',restSec:112},
+    {id:'v1',name:'Overhead press',sets:'3×6–10',ref:'Barre + 10 kg / côté',rir:'1–2',warmup:true,restDisplay:'1m45–2m',restSec:112},
     {id:'v2',name:'Tirage vertical neutre',sets:'3×8–12',ref:'52+2,3 kg',rir:'1–2',restDisplay:'1m30–2m',restSec:105},
     {id:'v3',name:'Développé haltères plat',sets:'3×8–12',ref:'22 kg / main',rir:'1–2',restDisplay:'1m30–2m',restSec:105},
     {id:'v4',name:'Row assis poulie',sets:'3×8–12',ref:'52 kg',rir:'1–2',restDisplay:'1m30',restSec:90},
@@ -193,7 +193,7 @@ const SESSIONS = [
     {id:'v10',name:'Captain chair knee raise',sets:'3×10–15',ref:'—',rir:'1',restDisplay:'1m',restSec:60},
   ]},
   { id:'hyper', name:'HYPER', subtitle:'Reps hautes · Focus tension', color:'#a855f7', exercises:[
-    {id:'h1',name:'Supine press / Chest press',sets:'3×8–12',ref:'30 kg / côté',rir:'1',restDisplay:'1m30–2m',restSec:105},
+    {id:'h1',name:'Supine press / Chest press',sets:'3×8–12',ref:'30 kg / côté',rir:'1',warmup:true,restDisplay:'1m30–2m',restSec:105},
     {id:'h2',name:'Tirage vertical variante',sets:'3×8–12',ref:'52+2,3 kg · Large ou supination',rir:'1',restDisplay:'1m30',restSec:90},
     {id:'h3',name:'Row unilatéral haltère',sets:'3×10–12',ref:'20 kg',rir:'1',restDisplay:'1m30',restSec:90},
     {id:'h4',name:'Chest fly machine',sets:'3×12–15',ref:'73 kg (dernière 66) · Siège 5/6/7',rir:'0–1',restDisplay:'1m',restSec:60},
@@ -205,9 +205,9 @@ const SESSIONS = [
     {id:'h10',name:'Captain chair knee raise',sets:'3×10–15',ref:'—',rir:'1',restDisplay:'1m',restSec:60},
   ]},
   { id:'rehab', name:'RÉÉDU', subtitle:'Genou · 10–12 min en fin de séance', color:'#10b981', exercises:[
-    {id:'r1',name:'Spanish squat',sets:'3×45–60s',ref:'—',unit:'sec',trackWeight:false,restDisplay:'1m',restSec:60},
-    {id:'r2',name:'Sit-to-stand',sets:'2×8',ref:'—',unit:'reps',trackWeight:false,restDisplay:'1m',restSec:60},
-    {id:'r3',name:'Marche inclinée',sets:'1×5–10min',ref:'Inclinaison 2–4% · 5 km/h',unit:'min',trackWeight:false,restDisplay:'—',restSec:0,note:'Arrêt immédiat si douleur.'},
+    {id:'r1',name:'Spanish squat',sets:'3×60s',ref:'—',unit:'sec',trackWeight:false,restDisplay:'1m',restSec:60},
+    {id:'r2',name:'Sit-to-stand',sets:'3×12',ref:'Lesté possible (haltère/sac contre la poitrine)',unit:'reps',restDisplay:'1m',restSec:60,note:'Descente lente et freinée : ne pas se laisser tomber sur la chaise.'},
+    {id:'r3',name:'Marche inclinée',sets:'1×10min',ref:'Inclinaison 4% · 5 km/h',unit:'min',trackWeight:false,restDisplay:'—',restSec:0,note:'Arrêt immédiat si douleur. Peut servir d\'échauffement en début de routine.'},
   ]},
 ];
 
@@ -430,7 +430,8 @@ function renderSession(){
       html+=`<div class="ex-body">
         <div class="ref-line">Prog : <b>${ex.ref}</b></div>
         ${ex.rir?`<div class="ref-line">Réserve visée : <b style="color:${accent}">${ex.rir} rep${ex.rir==='1'?'':'s'} en réserve</b></div>`:''}
-        ${lastStr}`;
+        ${lastStr}
+        ${ex.warmup?warmupBlock(ex,accent):''}`;
 
       for(let i=0;i<target;i++){
         const logged = i < done.length ? done[i] : null;
@@ -476,6 +477,29 @@ function renderNutri(){
   });
   html+=`</div>`;
   document.getElementById('nutri-content').innerHTML=html;
+}
+
+// Échauffement en séries montantes, calculé depuis la charge de travail
+function roundPlate(x){ return (Math.round(x/1.25)*1.25).toString().replace('.',','); }
+function warmupBlock(ex, accent){
+  const wRaw = (lastWeights[ex.id]||'').toString().replace(',','.');
+  const w = parseFloat(wRaw);
+  let rows;
+  if(w && w>0){
+    rows = [
+      ['~'+roundPlate(w*0.5)+' kg', '8 reps'],
+      ['~'+roundPlate(w*0.7)+' kg', '5 reps'],
+      ['~'+roundPlate(w*0.85)+' kg', '3 reps'],
+    ];
+  } else {
+    rows = [['~50 %','8 reps'],['~70 %','5 reps'],['~85 %','3 reps']];
+  }
+  return `<div style="background:#0b1220;border:1px solid #1e293b;border-radius:8px;padding:9px 11px;margin:8px 0">
+    <div style="font-size:9px;color:#334155;text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px">Échauffement · séries montantes</div>
+    ${rows.map((r,i)=>`<div style="font-size:12px;color:#94a3b8;margin-bottom:3px">
+      <span style="color:#475569">S${i+1}</span> &nbsp;<b style="color:#cbd5e1">${r[0]}</b> × ${r[1]}</div>`).join('')}
+    <div style="font-size:10px;color:#475569;margin-top:6px;line-height:1.4">Repos 30–60 s entre ces séries, puis <b style="color:${accent}">1 m 30–2 m</b> avant la 1re série de travail.</div>
+  </div>`;
 }
 
 function exNameById(id){ for(const s of SESSIONS){ const e=s.exercises.find(x=>x.id===id); if(e) return {name:e.name, hw:hasWeight(e), unit:unitLabel(e)}; } return {name:id,hw:true,unit:'reps'}; }
