@@ -135,7 +135,7 @@
 <body>
 
 <div class="header">
-  <div class="header-label">Programme Musculation <span style="color:#22c55e;font-weight:800">· v7</span></div>
+  <div class="header-label">Programme Musculation <span style="color:#22c55e;font-weight:800">· v8</span></div>
   <div class="header-title">Haut du corps<br><span class="header-sub">1 séance / 2 jours</span></div>
 </div>
 
@@ -206,7 +206,7 @@ const SESSIONS = [
   ]},
   { id:'rehab', name:'RÉÉDU', subtitle:'Genou · 10–12 min en fin de séance', color:'#10b981', exercises:[
     {id:'r1',name:'Spanish squat',sets:'3×60s',ref:'—',unit:'sec',trackWeight:false,restDisplay:'1m',restSec:60},
-    {id:'r2',name:'Sit-to-stand',sets:'3×12',ref:'Lesté possible (haltère/sac contre la poitrine)',unit:'reps',restDisplay:'1m',restSec:60,note:'Descente lente et freinée : ne pas se laisser tomber sur la chaise.'},
+    {id:'r2',name:'Sit-to-stand',sets:'3×12',ref:'12,5 kg (haltère/sac contre la poitrine)',unit:'reps',restDisplay:'1m',restSec:60,note:'Descente lente et freinée : effleurer l\'assise, ne pas s\'affaler. Si la technique se dégrade, redescendre à 10 kg.'},
     {id:'r3',name:'Marche inclinée',sets:'1×10min',ref:'Inclinaison 4% · 5 km/h',unit:'min',trackWeight:false,restDisplay:'—',restSec:0,note:'Arrêt immédiat si douleur. Peut servir d\'échauffement en début de routine.'},
   ]},
 ];
@@ -230,6 +230,7 @@ let bodyWeights = []; // [ { ts, weight } ] sorted by ts asc
 
 // Timer
 let timerInterval = null, timerEnd = 0, timerTotal = 0, timerExName = '', timerDone = false;
+let hideTimeout = null; // référence du setTimeout qui masque la barre (évite qu'un ancien ordre efface un nouveau chrono)
 
 const K_PREFS='muscu_v4_prefs', K_W='muscu_v4_weights', K_CUR='muscu_v4_current', K_HIST='muscu_v4_history', K_BW='muscu_v4_bodyweights';
 
@@ -276,15 +277,17 @@ function fmtDate(ts){
 
 // ---------- Timer ----------
 function remainingSec(){ return Math.max(0, Math.ceil((timerEnd-Date.now())/1000)); }
+function clearPendingHide(){ if(hideTimeout){ clearTimeout(hideTimeout); hideTimeout=null; } }
 function startTimer(ex){
   if(!ex.restSec||ex.restSec<=0) return;
-  clearInterval(timerInterval); timerDone=false; timerTotal=ex.restSec; timerExName=ex.name;
+  clearInterval(timerInterval); clearPendingHide();
+  timerDone=false; timerTotal=ex.restSec; timerExName=ex.name;
   timerEnd=Date.now()+ex.restSec*1000; save(); showTimerBar(); tickTimer();
   timerInterval=setInterval(tickTimer,500);
 }
-function resumeTimer(){ clearInterval(timerInterval); timerDone=false; showTimerBar(); tickTimer(); timerInterval=setInterval(tickTimer,500); }
+function resumeTimer(){ clearInterval(timerInterval); clearPendingHide(); timerDone=false; showTimerBar(); tickTimer(); timerInterval=setInterval(tickTimer,500); }
 function showTimerBar(){ document.getElementById('timer-bar').classList.remove('hidden'); document.body.classList.add('timer-on'); }
-function hideTimerBar(){ document.getElementById('timer-bar').classList.add('hidden'); document.body.classList.remove('timer-on'); }
+function hideTimerBar(){ hideTimeout=null; document.getElementById('timer-bar').classList.add('hidden'); document.body.classList.remove('timer-on'); }
 function tickTimer(){ const r=remainingSec(); updateTimerUI(r); if(r<=0&&!timerDone) finishTimer(); }
 function finishTimer(){
   clearInterval(timerInterval); timerDone=true; timerEnd=0; save();
@@ -292,7 +295,8 @@ function finishTimer(){
   document.getElementById('timer-label').textContent='Repos terminé';
   document.getElementById('timer-name').textContent='Série suivante';
   document.getElementById('timer-text').textContent='0:00';
-  setTimeout(hideTimerBar,4000);
+  clearPendingHide();
+  hideTimeout=setTimeout(hideTimerBar,8000);
 }
 function updateTimerUI(r){
   document.getElementById('timer-text').textContent=`${Math.floor(r/60)}:${String(r%60).padStart(2,'0')}`;
@@ -303,7 +307,7 @@ function updateTimerUI(r){
   ring.setAttribute('stroke',color); ring.setAttribute('stroke-dasharray',C);
   ring.setAttribute('stroke-dashoffset', timerTotal?C*(1-r/timerTotal):0);
 }
-function skipTimer(){ clearInterval(timerInterval); timerEnd=0; timerDone=false; save(); hideTimerBar(); }
+function skipTimer(){ clearInterval(timerInterval); clearPendingHide(); timerEnd=0; timerDone=false; save(); hideTimerBar(); }
 let audioCtx=null;
 function beep(){
   if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();
@@ -500,7 +504,7 @@ function warmupBlock(ex, accent){
   </div>`;
 }
 function warmupRest(name, seconds){
-  clearInterval(timerInterval);
+  clearInterval(timerInterval); clearPendingHide();
   timerDone=false; timerTotal=seconds; timerExName='Échauffement · '+name;
   timerEnd=Date.now()+seconds*1000; save(); showTimerBar(); tickTimer();
   timerInterval=setInterval(tickTimer,500);
