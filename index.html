@@ -135,7 +135,7 @@
 <body>
 
 <div class="header">
-  <div class="header-label">Programme Musculation <span style="color:#22c55e;font-weight:800">· v9</span></div>
+  <div class="header-label">Programme Musculation <span style="color:#22c55e;font-weight:800">· v10</span></div>
   <div class="header-title">Haut du corps<br><span class="header-sub">1 séance / 2 jours</span></div>
 </div>
 
@@ -246,6 +246,14 @@ function save() {
 function load() {
   try {
     lastWeights = JSON.parse(localStorage.getItem(K_W) || '{}');
+    // Migration : fusionner les charges stockées par id vers les clés partagées
+    Object.keys(EX_ALIAS).forEach(id=>{
+      if(lastWeights[id]!==undefined){
+        const k=EX_ALIAS[id];
+        if(lastWeights[k]===undefined) lastWeights[k]=lastWeights[id];
+        delete lastWeights[id];
+      }
+    });
     current = JSON.parse(localStorage.getItem(K_CUR) || '{"entries":{},"startedAt":null}');
     if (!current.entries) current.entries = {};
     history = JSON.parse(localStorage.getItem(K_HIST) || '[]');
@@ -258,6 +266,24 @@ function load() {
 }
 
 // ---------- Helpers ----------
+
+// Même exercice présent dans plusieurs séances : une seule mémoire de charge partagée
+const EX_ALIAS = {
+  f5:'elevlat', v8:'elevlat', h5:'elevlat',      // Élévations latérales
+  f6:'tricorde', h8:'tricorde',                   // Triceps corde
+  f7:'curlinc', h7:'curlinc',                     // Curl incliné
+  f8:'cablecrunch', v9:'cablecrunch', h9:'cablecrunch', // Cable crunch
+  f9:'kneeraise', v10:'kneeraise', h10:'kneeraise',     // Captain chair
+  f3:'rowassis', v4:'rowassis',                   // Row assis (même machine)
+  v2:'tiragevert', h2:'tiragevert',               // Tirage vertical (neutre/variante)
+};
+function canonicalKey(id){ return EX_ALIAS[id] || id; }
+function aliasGroup(id){
+  const k = canonicalKey(id);
+  const g = Object.keys(EX_ALIAS).filter(i => EX_ALIAS[i] === k);
+  return g.length ? g : [id];
+}
+
 function parseTarget(sets){ const m=sets.match(/^(\d+)/); return m?parseInt(m[1]):0; }
 function topReps(sets){ const after=sets.split('×')[1]||''; const nums=after.match(/\d+/g); return nums?nums[nums.length-1]:''; }
 function hasWeight(ex){ if(ex.trackWeight===false) return false; return ex.ref !== '—'; }
@@ -267,7 +293,12 @@ function loggedSets(exId){ return (current.entries[exId]||[]); }
 function exComplete(ex){ const t=parseTarget(ex.sets); return t>0 && loggedSets(ex.id).length>=t; }
 
 function lastHistoryFor(exId){
-  for (let i=history.length-1;i>=0;i--){ if (history[i].entries[exId] && history[i].entries[exId].length) return history[i]; }
+  const group = aliasGroup(exId);
+  for (let i=history.length-1;i>=0;i--){
+    for (const id of group){
+      if (history[i].entries[id] && history[i].entries[id].length) return { ts: history[i].ts, sets: history[i].entries[id] };
+    }
+  }
   return null;
 }
 function fmtDate(ts){
@@ -336,7 +367,7 @@ function logSet(tabIdx, exId){
   const ri=document.getElementById(`r-${exId}-${idx}`); r=ri?ri.value.trim():'';
   if(!current.entries[exId]) current.entries[exId]=[];
   current.entries[exId].push({w, r});
-  if(hasWeight(ex) && w) lastWeights[exId]=w;
+  if(hasWeight(ex) && w) lastWeights[canonicalKey(exId)]=w;
   if(!current.startedAt) current.startedAt=Date.now();
   save();
   startTimer(ex);
@@ -428,7 +459,7 @@ function renderSession(){
     if(isExp){
       const lastH=lastHistoryFor(ex.id);
       let lastStr='';
-      if(lastH){ const arr=lastH.entries[ex.id].map(x=> hw?`${x.w||'?'}×${x.r||'?'}`:`${x.r||'?'} ${unitLabel(ex)}`).join(' · ');
+      if(lastH){ const arr=lastH.sets.map(x=> hw?`${x.w||'?'}×${x.r||'?'}`:`${x.r||'?'} ${unitLabel(ex)}`).join(' · ');
         lastStr=`<div class="ref-last">Dernière (${fmtDate(lastH.ts)}) : ${arr}</div>`; }
 
       html+=`<div class="ex-body">
@@ -439,7 +470,7 @@ function renderSession(){
 
       for(let i=0;i<target;i++){
         const logged = i < done.length ? done[i] : null;
-        const wDefault = logged ? (logged.w||'') : (lastWeights[ex.id]||'');
+        const wDefault = logged ? (logged.w||'') : (lastWeights[canonicalKey(ex.id)]||'');
         const rDefault = logged ? (logged.r||'') : topReps(ex.sets);
         const isCurrent = i===done.length;
         if(logged){
@@ -490,7 +521,7 @@ const WARMUP_STEPS = [
   {pctNum:85, reps:'3 reps', rest:105, restLabel:'1 m 45'},
 ];
 function warmupBlock(ex, accent){
-  const raw=(lastWeights[ex.id]||'').toString().replace(',','.');
+  const raw=(lastWeights[canonicalKey(ex.id)]||'').toString().replace(',','.');
   const w=parseFloat(raw);
   const has = w && w>0;
   const fmtKg = x => (Math.round(x*4)/4).toString().replace('.',',');
