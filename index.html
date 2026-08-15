@@ -135,7 +135,7 @@
 <body>
 
 <div class="header">
-  <div class="header-label">Programme Musculation <span style="color:#22c55e;font-weight:800">· v10</span></div>
+  <div class="header-label">Programme Musculation <span style="color:#22c55e;font-weight:800">· v11</span></div>
   <div class="header-title">Haut du corps<br><span class="header-sub">1 séance / 2 jours</span></div>
 </div>
 
@@ -178,7 +178,7 @@ const SESSIONS = [
     {id:'f6',name:'Triceps corde',sets:'2×10–15',ref:'—',rir:'0–1',restDisplay:'1m–1m15',restSec:67},
     {id:'f7',name:'Curl incliné',sets:'2×10–15',ref:'Dégressif',rir:'0–1',restDisplay:'1m',restSec:60},
     {id:'f8',name:'Cable crunch',sets:'3×10–15',ref:'—',rir:'1',restDisplay:'1m',restSec:60},
-    {id:'f9',name:'Captain chair knee raise',sets:'3×10–15',ref:'—',rir:'1',restDisplay:'1m',restSec:60},
+    {id:'f9',name:'Captain chair knee raise',sets:'3×10–15',ref:'—',trackWeight:false,rir:'1',restDisplay:'1m',restSec:60},
   ]},
   { id:'volume', name:'VOLUME', subtitle:'Reps moyennes · Repos courts', color:'#3b82f6', exercises:[
     {id:'v1',name:'Overhead press',sets:'3×6–10',ref:'—',rir:'1–2',warmup:true,restDisplay:'1m45–2m',restSec:112},
@@ -190,7 +190,7 @@ const SESSIONS = [
     {id:'v7',name:'Curl EZ',sets:'2×8–12',ref:'—',rir:'0–1',restDisplay:'1m',restSec:60},
     {id:'v8',name:'Élévations latérales',sets:'2×15–25',ref:'—',rir:'0–1',restDisplay:'45s–1m',restSec:52},
     {id:'v9',name:'Cable crunch',sets:'3×10–15',ref:'—',rir:'1',restDisplay:'1m',restSec:60},
-    {id:'v10',name:'Captain chair knee raise',sets:'3×10–15',ref:'—',rir:'1',restDisplay:'1m',restSec:60},
+    {id:'v10',name:'Captain chair knee raise',sets:'3×10–15',ref:'—',trackWeight:false,rir:'1',restDisplay:'1m',restSec:60},
   ]},
   { id:'hyper', name:'HYPER', subtitle:'Reps hautes · Focus tension', color:'#a855f7', exercises:[
     {id:'h1',name:'Supine press / Chest press',sets:'3×8–12',ref:'—',rir:'1',warmup:true,restDisplay:'1m30–2m',restSec:105},
@@ -202,7 +202,7 @@ const SESSIONS = [
     {id:'h7',name:'Curl incliné',sets:'3×10–12',ref:'Banc 45° (pos. 3)',rir:'0–1',restDisplay:'1m',restSec:60},
     {id:'h8',name:'Triceps corde',sets:'3×12–15',ref:'—',rir:'0–1',restDisplay:'1m',restSec:60},
     {id:'h9',name:'Cable crunch',sets:'3×10–15',ref:'—',rir:'1',restDisplay:'1m',restSec:60},
-    {id:'h10',name:'Captain chair knee raise',sets:'3×10–15',ref:'—',rir:'1',restDisplay:'1m',restSec:60},
+    {id:'h10',name:'Captain chair knee raise',sets:'3×10–15',ref:'—',trackWeight:false,rir:'1',restDisplay:'1m',restSec:60},
   ]},
   { id:'rehab', name:'RÉÉDU', subtitle:'Genou · 10–12 min en fin de séance', color:'#10b981', exercises:[
     {id:'r1',name:'Spanish squat',sets:'3×60s',ref:'—',unit:'sec',trackWeight:false,restDisplay:'1m',restSec:60},
@@ -286,7 +286,7 @@ function aliasGroup(id){
 
 function parseTarget(sets){ const m=sets.match(/^(\d+)/); return m?parseInt(m[1]):0; }
 function topReps(sets){ const after=sets.split('×')[1]||''; const nums=after.match(/\d+/g); return nums?nums[nums.length-1]:''; }
-function hasWeight(ex){ if(ex.trackWeight===false) return false; return ex.ref !== '—'; }
+function hasWeight(ex){ return ex.trackWeight !== false; }
 function unitLabel(ex){ return ex.unit || 'reps'; }
 
 function loggedSets(exId){ return (current.entries[exId]||[]); }
