@@ -269,13 +269,10 @@ function load() {
 
 // Même exercice présent dans plusieurs séances : une seule mémoire de charge partagée
 const EX_ALIAS = {
-  f5:'elevlat', v8:'elevlat', h5:'elevlat',      // Élévations latérales
-  f6:'tricorde', h8:'tricorde',                   // Triceps corde
-  f7:'curlinc', h7:'curlinc',                     // Curl incliné
-  f8:'cablecrunch', v9:'cablecrunch', h9:'cablecrunch', // Cable crunch
-  f9:'kneeraise', v10:'kneeraise', h10:'kneeraise',     // Captain chair
-  f3:'rowassis', v4:'rowassis',                   // Row assis (même machine)
-  v2:'tiragevert', h2:'tiragevert',               // Tirage vertical (neutre/variante)
+  // Partage UNIQUEMENT si l'objectif de séries×reps est strictement identique.
+  // Sinon la charge n'est pas comparable (ex : row assis 3×6–8 en force vs 3×8–12 en volume).
+  f8:'cablecrunch', v9:'cablecrunch', h9:'cablecrunch',   // Cable crunch : 3×10–15 partout
+  f9:'kneeraise',  v10:'kneeraise',  h10:'kneeraise',     // Captain chair : 3×10–15 partout
 };
 function canonicalKey(id){ return EX_ALIAS[id] || id; }
 function aliasGroup(id){
