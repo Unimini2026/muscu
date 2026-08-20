@@ -135,7 +135,7 @@
 <body>
 
 <div class="header">
-  <div class="header-label">Programme Musculation <span style="color:#22c55e;font-weight:800">· v14</span></div>
+  <div class="header-label">Programme Musculation <span style="color:#22c55e;font-weight:800">· v16</span></div>
   <div class="header-title">Haut du corps<br><span class="header-sub">1 séance / 2 jours</span></div>
 </div>
 
@@ -174,10 +174,10 @@ const SESSIONS = [
     {id:'f2',name:'Tractions assistées',sets:'4×4–6',ref:'—',rir:'2–3',restDisplay:'2m–2m30',restSec:135},
     {id:'f3',name:'Row assis',sets:'3×6–8',ref:'—',rir:'2–3',restDisplay:'2m',restSec:120},
     {id:'f4',name:'Développé incliné haltères',sets:'2×6–8',ref:'—',rir:'2',restDisplay:'1m45–2m',restSec:112},
-    {id:'f5',name:'Élévations latérales',sets:'3×12–20',ref:'6→5→4 (dégressif)',rehab:'Spanish squat 3×60s',rir:'0–1',restDisplay:'1m',restSec:60,note:'⚠️ Tension épaule : 4 kg (voire 3), RPE 6–7 max, mouvement lent.'},
+    {id:'f5',name:'Élévations latérales',sets:'3×12–20',ref:'6→5→4 (dégressif)',rehab:'Spanish squat 3×60s',rir:'0–1',restDisplay:'1m45',restSec:105,note:'⚠️ Tension épaule : 4 kg (voire 3), RPE 6–7 max, mouvement lent.'},
     {id:'f6',name:'Triceps corde',sets:'2×10–15',ref:'—',rir:'0–1',restDisplay:'1m–1m15',restSec:67},
     {id:'f7',name:'Curl incliné',sets:'2×10–15',ref:'Dégressif',rir:'0–1',restDisplay:'1m',restSec:60},
-    {id:'f8',name:'Cable crunch',sets:'3×10–15',ref:'—',rehab:'Sit-to-stand 3×12',rir:'1',restDisplay:'1m',restSec:60},
+    {id:'f8',name:'Cable crunch',sets:'3×10–15',ref:'—',rehab:'Sit-to-stand 3×12',rir:'1',restDisplay:'1m45',restSec:105},
     {id:'f9',name:'Captain chair knee raise',sets:'3×10–15',ref:'—',trackWeight:false,rir:'1',restDisplay:'1m',restSec:60},
   ]},
   { id:'volume', name:'VOLUME', subtitle:'Reps moyennes · Repos courts', color:'#3b82f6', exercises:[
@@ -193,9 +193,9 @@ const SESSIONS = [
     {id:'v10',name:'Captain chair knee raise',sets:'3×10–15',ref:'—',trackWeight:false,rir:'1',restDisplay:'1m',restSec:60},
   ]},
   { id:'hyper', name:'HYPER', subtitle:'Reps hautes · Focus tension', color:'#a855f7', exercises:[
-    {id:'h1',name:'Supine press / Chest press',sets:'3×8–12',ref:'—',rehab:'Spanish squat 3×60s',rir:'1',warmup:true,restDisplay:'1m30–2m',restSec:105},
+    {id:'h1',name:'Supine press / Chest press',sets:'3×8–12',ref:'—',rehab:'Spanish squat 3×60s',rir:'1',warmup:true,restDisplay:'2m',restSec:120},
     {id:'h2',name:'Tirage vertical variante',sets:'3×8–12',ref:'Prise large ou supination',rir:'1',restDisplay:'1m30',restSec:90},
-    {id:'h3',name:'Row unilatéral haltère',sets:'3×10–12',ref:'—',rehab:'Sit-to-stand 3×12',rir:'1',restDisplay:'1m30',restSec:90},
+    {id:'h3',name:'Row unilatéral haltère',sets:'3×10–12',ref:'—',rehab:'Sit-to-stand 3×12',rir:'1',restDisplay:'1m45',restSec:105},
     {id:'h4',name:'Chest fly machine',sets:'3×12–15',ref:'Siège pos. 5/6/7',rir:'0–1',restDisplay:'1m',restSec:60},
     {id:'h5',name:'Élévations latérales',sets:'3×15–20',ref:'—',rir:'0–1',restDisplay:'45s–1m',restSec:52,note:'⚠️ Tension épaule : 4 kg (voire 3), RPE 6–7 max.'},
     {id:'h6',name:'Reverse fly unilatéral poulie',sets:'3×12–20',ref:'Réglage 16',rir:'0–1',restDisplay:'1m',restSec:60,note:'Ne pas bouger le poignet.'},
@@ -207,14 +207,31 @@ const SESSIONS = [
   { id:'rehab', name:'RÉÉDU', subtitle:'Genou · 10–12 min en fin de séance', color:'#10b981', exercises:[
     {id:'r1',name:'Spanish squat',sets:'3×60s',ref:'—',unit:'sec',trackWeight:false,restDisplay:'1m',restSec:60},
     {id:'r2',name:'Sit-to-stand',sets:'3×12',ref:'17,5 kg (haltère/sac contre la poitrine)',unit:'reps',restDisplay:'1m',restSec:60,note:'Descente lente et freinée : effleurer l\'assise, ne pas s\'affaler. Si la technique se dégrade, redescendre à 15 kg.'},
-    {id:'r3',name:'Marche inclinée',sets:'1×10min',ref:'Inclinaison 4% · 5 km/h',unit:'min',trackWeight:false,restDisplay:'—',restSec:0,note:'Arrêt immédiat si douleur. Peut servir d\'échauffement en début de routine.'},
+    {id:'r3',name:'Marche inclinée',sets:'1×10min',ref:'Inclinaison 6–7% · 5 km/h',unit:'min',trackWeight:false,restDisplay:'—',restSec:0,note:'Arrêt immédiat si douleur. Peut servir d\'échauffement en début de routine.'},
   ]},
 ];
 
 const NUTRI = [
-  {label:'ENTRAÎNEMENT · SÈCHE', color:'#ef4444', items:[['Calories','2 000–2 100 kcal'],['Protéines','170 g'],['Créatine','5 g / jour']]},
-  {label:'REPOS · SÈCHE', color:'#3b82f6', items:[['Calories','1 800–1 900 kcal'],['Protéines','170 g'],['Créatine','5 g / jour']]},
-  {label:'OBJECTIF SÈCHE', color:'#10b981', items:[['Durée','8–12 semaines'],['Perte visée','0,3–0,5 kg / sem'],['Ajustement','selon la balance'],['Plancher','≥ 1 800 kcal']]},
+  {label:'MAINTENANCE · 2 SEMAINES', color:'#10b981', items:[
+    ['Repos, sans service','2 400–2 500 kcal'],
+    ['Repos + service resto','2 600–2 700 kcal'],
+    ['Sport, sans service','2 600–2 700 kcal'],
+    ['Sport + service resto','2 800–2 900 kcal'],
+  ]},
+  {label:'CONSTANTES', color:'#f59e0b', items:[
+    ['Protéines','170 g / jour'],
+    ['Créatine','5 g / jour'],
+  ]},
+  {label:'PILOTAGE', color:'#3b82f6', items:[
+    ['Objectif','poids stable ~83 kg'],
+    ['Si ça descend','+150–200 kcal'],
+    ['Si ça monte >0,5 kg/sem','−150–200 kcal'],
+    ['Rebond attendu','+1 à 1,5 kg (glycogène)'],
+  ]},
+  {label:'DÈS LE BUREAU (SEPT.)', color:'#a855f7', items:[
+    ['Dépense','en forte baisse'],
+    ['Action','recalibrer après 1 semaine'],
+  ]},
 ];
 
 // ---------- State ----------
@@ -505,7 +522,7 @@ function renderNutri(){
   let html=`<div class="nutri-section"><div class="nutri-title">MACROS · PHASE SÈCHE</div>`;
   NUTRI.forEach(day=>{
     html+=`<div class="nutri-card">
-      <div class="nutri-card-header" style="background:${day.color}22"><div class="nutri-card-label" style="color:${day.color}">JOURS ${day.label}</div></div>
+      <div class="nutri-card-header" style="background:${day.color}22"><div class="nutri-card-label" style="color:${day.color}">${day.label}</div></div>
       ${day.items.map(([k,v],i)=>`<div class="nutri-row" ${i===day.items.length-1?'style="border-bottom:none"':''}><span class="nutri-key">${k}</span><span class="nutri-val">${v}</span></div>`).join('')}
     </div>`;
   });
@@ -520,10 +537,13 @@ const WARMUP_STEPS = [
   {pctNum:85, reps:'3 reps', rest:105, restLabel:'1 m 45'},
 ];
 function rehabBlock(ex){
+  const dur = /Spanish/.test(ex.rehab) ? 60 : 45;
+  const reste = Math.max(0, (ex.restSec||0) - dur);
   return `<div style="background:#08160f;border:1px solid #1a3d2b;border-radius:8px;padding:9px 11px;margin:8px 0">
     <div style="font-size:9px;color:#15803d;text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px">🦵 Rééduc à intercaler</div>
     <div style="font-size:13px;color:#86efac;font-weight:700">${ex.rehab}</div>
-    <div style="font-size:10px;color:#475569;margin-top:5px;line-height:1.45">Une série pendant chaque repos de cet exercice. Un seul chrono : celui du haut du corps. Si le temps manque, reporte la série en fin de séance.</div>
+    <div style="font-size:11px;color:#4d7c5a;margin-top:4px">Repos ${ex.restDisplay} = ~${dur} s de rééduc + ~${reste} s de récup</div>
+    <div style="font-size:10px;color:#475569;margin-top:5px;line-height:1.45">Une série pendant chaque repos. Un seul chrono : celui du haut du corps. Le repos de la rééduc n'a pas à être respecté, elle récupère pendant la série suivante.</div>
   </div>`;
 }
 
