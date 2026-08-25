@@ -135,7 +135,7 @@
 <body>
 
 <div class="header">
-  <div class="header-label">Programme Musculation <span style="color:#22c55e;font-weight:800">· v16</span></div>
+  <div class="header-label">Programme Musculation <span style="color:#22c55e;font-weight:800">· v17</span></div>
   <div class="header-title">Haut du corps<br><span class="header-sub">1 séance / 2 jours</span></div>
 </div>
 
@@ -244,6 +244,7 @@ let history = [];       // [ { date, ts, entries: { exId: [{w,r}] } } ]
 
 let expandedHist = null;
 let bodyWeights = []; // [ { ts, weight } ] sorted by ts asc
+let staleSession = false; // séance en cours démarrée un autre jour
 
 // Timer
 let timerInterval = null, timerEnd = 0, timerTotal = 0, timerExName = '', timerDone = false;
@@ -272,6 +273,10 @@ function load() {
       }
     });
     current = JSON.parse(localStorage.getItem(K_CUR) || '{"entries":{},"startedAt":null}');
+    if (!current.entries) current.entries = {};
+    // Séance laissée ouverte un autre jour : on la signale au lieu de la dater à tort
+    staleSession = !!(current.lastAt && !sameDay(current.lastAt, Date.now())
+                      && Object.values(current.entries).some(a=>a && a.length));
     if (!current.entries) current.entries = {};
     history = JSON.parse(localStorage.getItem(K_HIST) || '[]');
     bodyWeights = JSON.parse(localStorage.getItem(K_BW) || '[]');
@@ -383,6 +388,7 @@ function logSet(tabIdx, exId){
   current.entries[exId].push({w, r});
   if(hasWeight(ex) && w) lastWeights[canonicalKey(exId)]=w;
   if(!current.startedAt) current.startedAt=Date.now();
+  current.lastAt=Date.now();
   save();
   startTimer(ex);
   renderSession();
@@ -394,14 +400,23 @@ function unlogSet(exId){
 function resetSession(){
   const ids=SESSIONS[tab].exercises.map(e=>e.id);
   ids.forEach(id=>{ delete current.entries[id]; });
-  expandedId=null; save(); renderSession();
+  expandedId=null;
+  if(!Object.values(current.entries).some(a=>a&&a.length)){ current.startedAt=null; current.lastAt=null; staleSession=false; }
+  save(); renderSession();
+}
+function sameDay(a,b){
+  const x=new Date(a), y=new Date(b);
+  return x.getFullYear()===y.getFullYear() && x.getMonth()===y.getMonth() && x.getDate()===y.getDate();
 }
 function finishSession(){
   const anything=Object.values(current.entries).some(a=>a && a.length);
   if(!anything){ alert('Aucune série enregistrée à sauvegarder.'); return; }
-  if(!confirm('Terminer la séance et l\'enregistrer dans l\'historique ?')) return;
-  history.push({ ts: current.startedAt || Date.now(), date: new Date().toISOString(), entries: JSON.parse(JSON.stringify(current.entries)) });
-  current={ entries:{}, startedAt:null };
+  // La séance est datée du jour de la DERNIÈRE série effectuée, pas de la première.
+  const ts = current.lastAt || current.startedAt || Date.now();
+  const d = new Date(ts).toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
+  if(!confirm(`Enregistrer cette séance au ${d} ?`)) return;
+  history.push({ ts, date: new Date(ts).toISOString(), entries: JSON.parse(JSON.stringify(current.entries)) });
+  current={ entries:{}, startedAt:null, lastAt:null }; staleSession=false;
   save(); renderSession();
   alert('Séance enregistrée ✅');
 }
@@ -443,6 +458,10 @@ function renderSession(){
       <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${pct}%;background:${accent}"></div></div>
       <div class="progress-count">${completed}/${exs.length}</div>
     </div>
+    ${staleSession?`<div style="margin:0 16px 10px;background:#2a1a08;border:1px solid #92400e;border-radius:10px;padding:10px 12px">
+      <div style="font-size:12px;color:#fbbf24;font-weight:700;margin-bottom:3px">⚠️ Séance en cours d'un autre jour</div>
+      <div style="font-size:11px;color:#a16207;line-height:1.45">Des séries ont été enregistrées le ${new Date(current.lastAt).toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'})}. Si c'est une séance oubliée, fais « Reset séance » avant de commencer.</div>
+    </div>`:''}
     <div class="exercises">`;
 
   exs.forEach((ex,idx)=>{
