@@ -129,19 +129,35 @@
   .timer-exname { font-size: 13px; font-weight: 600; color: #94a3b8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 2px; }
   .skip-btn { padding: 8px 12px; background: #1a2030; border: none; border-radius: 8px; color: #64748b; font-size: 12px; font-weight: 700; cursor: pointer; flex-shrink: 0; }
 
+  /* Club */
+  .club-row { padding: 10px 16px 0; display: flex; align-items: center; gap: 10px; }
+  .club-select { flex: 1; background: #0f1623; border: 1px solid #243044; border-radius: 999px; color: #e2e8f0; font-size: 12px; font-weight: 700; padding: 7px 12px; -webkit-appearance: none; appearance: none; text-align: center; }
+  .club-select:focus { outline: none; border-color: #38bdf8; }
+  .club-tag { font-size: 9px; font-weight: 800; letter-spacing: .06em; color: #38bdf8; background: #0c2a3a; border: 1px solid #155e75; border-radius: 5px; padding: 1px 5px; text-transform: uppercase; }
+  .set-note-row { display: flex; align-items: center; gap: 6px; margin: 6px 0 9px; }
+  .set-note-label { font-size: 11px; color: #64748b; flex-shrink: 0; }
+  .set-note-input { flex: 1; min-width: 0; background: #080c14; border: 1px solid #1e293b; border-radius: 7px; color: #e2e8f0; font-size: 12px; font-weight: 600; padding: 6px 9px; }
+  .set-note-input:focus { outline: none; border-color: #38bdf8; }
+  .hist-club { font-size: 9px; font-weight: 800; color: #38bdf8; background: #0c2a3a; border-radius: 5px; padding: 2px 6px; margin-left: 8px; text-transform: uppercase; letter-spacing: .05em; }
+
   .hidden { display: none !important; }
 </style>
 </head>
 <body>
 
 <div class="header">
-  <div class="header-label">Programme Musculation <span style="color:#22c55e;font-weight:800">· v17</span></div>
+  <div class="header-label">Programme Musculation <span style="color:#22c55e;font-weight:800">· v18</span></div>
   <div class="header-title">Haut du corps<br><span class="header-sub">1 séance / 2 jours</span></div>
 </div>
 
 <div class="toprow">
   <span class="mini-label">🔔 Alarme auto à chaque série</span>
   <button id="autoalarm-btn" class="pill-btn" onclick="toggleAutoAlarm()"></button>
+</div>
+
+<div class="club-row">
+  <span class="mini-label" style="flex-shrink:0">📍 Club</span>
+  <select id="club-select" class="club-select" onchange="setClub(this.value)"></select>
 </div>
 
 <div class="tabs" id="tabs"></div>
@@ -171,66 +187,66 @@
 const SESSIONS = [
   { id:'force', name:'FORCE', subtitle:'Charge max · Reps basses', color:'#ef4444', exercises:[
     {id:'f1',name:'Développé couché barre',sets:'4×4–6',ref:'—',rir:'2–3',warmup:true,restDisplay:'2m30–3m',restSec:165},
-    {id:'f2',name:'Tractions assistées',sets:'4×4–6',ref:'—',rir:'2–3',restDisplay:'2m–2m30',restSec:135},
-    {id:'f3',name:'Row assis',sets:'3×6–8',ref:'—',rir:'2–3',restDisplay:'2m',restSec:120},
+    {id:'f2',machine:true,name:'Tractions assistées',sets:'4×4–6',ref:'—',rir:'2–3',restDisplay:'2m–2m30',restSec:135},
+    {id:'f3',machine:true,name:'Row assis',sets:'3×6–8',ref:'—',rir:'2–3',restDisplay:'2m',restSec:120},
     {id:'f4',name:'Développé incliné haltères',sets:'2×6–8',ref:'—',rir:'2',restDisplay:'1m45–2m',restSec:112},
     {id:'f5',name:'Élévations latérales',sets:'3×12–20',ref:'6→5→4 (dégressif)',rehab:'Spanish squat 3×60s',rir:'0–1',restDisplay:'1m45',restSec:105,note:'⚠️ Tension épaule : 4 kg (voire 3), RPE 6–7 max, mouvement lent.'},
-    {id:'f6',name:'Triceps corde',sets:'2×10–15',ref:'—',rir:'0–1',restDisplay:'1m–1m15',restSec:67},
+    {id:'f6',machine:true,name:'Triceps corde',sets:'2×10–15',ref:'—',rir:'0–1',restDisplay:'1m–1m15',restSec:67},
     {id:'f7',name:'Curl incliné',sets:'2×10–15',ref:'Dégressif',rir:'0–1',restDisplay:'1m',restSec:60},
-    {id:'f8',name:'Cable crunch',sets:'3×10–15',ref:'—',rehab:'Sit-to-stand 3×12',rir:'1',restDisplay:'1m45',restSec:105},
+    {id:'f8',machine:true,name:'Cable crunch',sets:'3×10–15',ref:'—',rehab:'Sit-to-stand 3×12',rir:'1',restDisplay:'1m45',restSec:105},
     {id:'f9',name:'Captain chair knee raise',sets:'3×10–15',ref:'—',trackWeight:false,rir:'1',restDisplay:'1m',restSec:60},
   ]},
   { id:'volume', name:'VOLUME', subtitle:'Reps moyennes · Repos courts', color:'#3b82f6', exercises:[
     {id:'v1',name:'Overhead press',sets:'3×6–10',ref:'—',rehab:'Spanish squat 3×60s',rir:'1–2',warmup:true,restDisplay:'1m45–2m',restSec:112},
-    {id:'v2',name:'Tirage vertical neutre',sets:'3×8–12',ref:'—',rir:'1–2',restDisplay:'1m30–2m',restSec:105},
+    {id:'v2',machine:true,name:'Tirage vertical neutre',sets:'3×8–12',ref:'—',rir:'1–2',restDisplay:'1m30–2m',restSec:105},
     {id:'v3',name:'Développé haltères plat',sets:'3×8–12',ref:'—',rehab:'Sit-to-stand 3×12',rir:'1–2',restDisplay:'1m30–2m',restSec:105},
-    {id:'v4',name:'Row assis poulie',sets:'3×8–12',ref:'—',rir:'1–2',restDisplay:'1m30',restSec:90},
-    {id:'v5',name:'Reverse pec deck',sets:'3×12–20',ref:'Siège pos. 2/3/4',rir:'0–1',restDisplay:'1m–1m15',restSec:67},
-    {id:'v6',name:'Dips assistés',sets:'2×8–12',ref:'—',rir:'1–2',restDisplay:'1m30',restSec:90},
+    {id:'v4',machine:true,name:'Row assis poulie',sets:'3×8–12',ref:'—',rir:'1–2',restDisplay:'1m30',restSec:90},
+    {id:'v5',machine:true,name:'Reverse pec deck',sets:'3×12–20',ref:'Siège pos. 2/3/4',rir:'0–1',restDisplay:'1m–1m15',restSec:67},
+    {id:'v6',machine:true,name:'Dips assistés',sets:'2×8–12',ref:'—',rir:'1–2',restDisplay:'1m30',restSec:90},
     {id:'v7',name:'Curl EZ',sets:'2×8–12',ref:'—',rir:'0–1',restDisplay:'1m',restSec:60},
     {id:'v8',name:'Élévations latérales',sets:'2×15–25',ref:'—',rir:'0–1',restDisplay:'45s–1m',restSec:52},
-    {id:'v9',name:'Cable crunch',sets:'3×10–15',ref:'—',rir:'1',restDisplay:'1m',restSec:60},
+    {id:'v9',machine:true,name:'Cable crunch',sets:'3×10–15',ref:'—',rir:'1',restDisplay:'1m',restSec:60},
     {id:'v10',name:'Captain chair knee raise',sets:'3×10–15',ref:'—',trackWeight:false,rir:'1',restDisplay:'1m',restSec:60},
   ]},
   { id:'hyper', name:'HYPER', subtitle:'Reps hautes · Focus tension', color:'#a855f7', exercises:[
-    {id:'h1',name:'Supine press / Chest press',sets:'3×8–12',ref:'—',rehab:'Spanish squat 3×60s',rir:'1',warmup:true,restDisplay:'2m',restSec:120},
-    {id:'h2',name:'Tirage vertical variante',sets:'3×8–12',ref:'Prise large ou supination',rir:'1',restDisplay:'1m30',restSec:90},
+    {id:'h1',machine:true,name:'Supine press / Chest press',sets:'3×8–12',ref:'—',rehab:'Spanish squat 3×60s',rir:'1',warmup:true,restDisplay:'2m',restSec:120},
+    {id:'h2',machine:true,name:'Tirage vertical variante',sets:'3×8–12',ref:'Prise large ou supination',rir:'1',restDisplay:'1m30',restSec:90},
     {id:'h3',name:'Row unilatéral haltère',sets:'3×10–12',ref:'—',rehab:'Sit-to-stand 3×12',rir:'1',restDisplay:'1m45',restSec:105},
-    {id:'h4',name:'Chest fly machine',sets:'3×12–15',ref:'Siège pos. 5/6/7',rir:'0–1',restDisplay:'1m',restSec:60},
+    {id:'h4',machine:true,name:'Chest fly machine',sets:'3×12–15',ref:'Siège pos. 5/6/7',rir:'0–1',restDisplay:'1m',restSec:60},
     {id:'h5',name:'Élévations latérales',sets:'3×15–20',ref:'—',rir:'0–1',restDisplay:'45s–1m',restSec:52,note:'⚠️ Tension épaule : 4 kg (voire 3), RPE 6–7 max.'},
-    {id:'h6',name:'Reverse fly unilatéral poulie',sets:'3×12–20',ref:'Réglage 16',rir:'0–1',restDisplay:'1m',restSec:60,note:'Ne pas bouger le poignet.'},
+    {id:'h6',machine:true,name:'Reverse fly unilatéral poulie',sets:'3×12–20',ref:'Réglage 16',rir:'0–1',restDisplay:'1m',restSec:60,note:'Ne pas bouger le poignet.'},
     {id:'h7',name:'Curl incliné',sets:'3×10–12',ref:'Banc 45° (pos. 3)',rir:'0–1',restDisplay:'1m',restSec:60},
-    {id:'h8',name:'Triceps corde',sets:'3×12–15',ref:'—',rir:'0–1',restDisplay:'1m',restSec:60},
-    {id:'h9',name:'Cable crunch',sets:'3×10–15',ref:'—',rir:'1',restDisplay:'1m',restSec:60},
+    {id:'h8',machine:true,name:'Triceps corde',sets:'3×12–15',ref:'—',rir:'0–1',restDisplay:'1m',restSec:60},
+    {id:'h9',machine:true,name:'Cable crunch',sets:'3×10–15',ref:'—',rir:'1',restDisplay:'1m',restSec:60},
     {id:'h10',name:'Captain chair knee raise',sets:'3×10–15',ref:'—',trackWeight:false,rir:'1',restDisplay:'1m',restSec:60},
   ]},
   { id:'rehab', name:'RÉÉDU', subtitle:'Genou · 10–12 min en fin de séance', color:'#10b981', exercises:[
     {id:'r1',name:'Spanish squat',sets:'3×60s',ref:'—',unit:'sec',trackWeight:false,restDisplay:'1m',restSec:60},
-    {id:'r2',name:'Sit-to-stand',sets:'3×12',ref:'17,5 kg (haltère/sac contre la poitrine)',unit:'reps',restDisplay:'1m',restSec:60,note:'Descente lente et freinée : effleurer l\'assise, ne pas s\'affaler. Si la technique se dégrade, redescendre à 15 kg.'},
-    {id:'r3',name:'Marche inclinée',sets:'1×10min',ref:'Inclinaison 6–7% · 5 km/h',unit:'min',trackWeight:false,restDisplay:'—',restSec:0,note:'Arrêt immédiat si douleur. Peut servir d\'échauffement en début de routine.'},
+    {id:'r2',name:'Sit-to-stand',sets:'3×12',ref:'20 kg (haltère/sac contre la poitrine)',unit:'reps',restDisplay:'1m',restSec:60,note:'Descente lente et freinée : effleurer l\'assise, ne pas s\'affaler. Si la technique se dégrade, redescendre à 17,5 kg.'},
+    {id:'r3',name:'Marche inclinée',sets:'1×10min',ref:'Inclinaison 7% · 5 km/h',unit:'min',trackWeight:false,restDisplay:'—',restSec:0,note:'Arrêt immédiat si douleur. Peut servir d\'échauffement en début de routine.'},
   ]},
 ];
 
 const NUTRI = [
-  {label:'MAINTENANCE · 2 SEMAINES', color:'#10b981', items:[
-    ['Repos, sans service','2 400–2 500 kcal'],
-    ['Repos + service resto','2 600–2 700 kcal'],
-    ['Sport, sans service','2 600–2 700 kcal'],
-    ['Sport + service resto','2 800–2 900 kcal'],
+  {label:'PRISE DE MASSE · DEPUIS LE 8 SEPT.', color:'#10b981', items:[
+    ['Repos, sans service','2 600–2 700 kcal'],
+    ['Repos + service resto','2 800–2 900 kcal'],
+    ['Sport, sans service','2 800–2 900 kcal'],
+    ['Sport + service resto','3 000–3 100 kcal'],
   ]},
   {label:'CONSTANTES', color:'#f59e0b', items:[
     ['Protéines','170 g / jour'],
     ['Créatine','5 g / jour'],
   ]},
   {label:'PILOTAGE', color:'#3b82f6', items:[
-    ['Objectif','poids stable ~83 kg'],
-    ['Si ça descend','+150–200 kcal'],
-    ['Si ça monte >0,5 kg/sem','−150–200 kcal'],
-    ['Rebond attendu','+1 à 1,5 kg (glycogène)'],
+    ['Objectif','+0,2–0,3 kg / semaine'],
+    ['Point de départ','83,2 kg (8 sept.)'],
+    ['Si stagnation 2 sem.','+150–200 kcal'],
+    ['Si >0,4–0,5 kg/sem','−150 kcal'],
   ]},
-  {label:'DÈS LE BUREAU (SEPT.)', color:'#a855f7', items:[
-    ['Dépense','en forte baisse'],
-    ['Action','recalibrer après 1 semaine'],
+  {label:'VÉLO ÉLECTRIQUE (LUN–VEN)', color:'#a855f7', items:[
+    ['Trajets','2 × 20 min, assistance forte'],
+    ['Impact','~100 kcal · déjà absorbé'],
   ]},
 ];
 
@@ -246,11 +262,24 @@ let expandedHist = null;
 let bodyWeights = []; // [ { ts, weight } ] sorted by ts asc
 let staleSession = false; // séance en cours démarrée un autre jour
 
+// Clubs : les machines à sélecteur/plaques n'ont pas la même échelle d'un club à l'autre
+const CLUBS = [
+  { id:'mp', name:'La Motte-Picquet' },
+  { id:'sg', name:'Saint Germain' },
+  { id:'ce', name:'Champs Élysées' },
+  { id:'te', name:'Ternes' },
+  { id:'lf', name:'La Fontaine' },
+];
+const HOME_CLUB = 'mp';
+let club = HOME_CLUB;
+let exSettings = {};      // { "canonKey@clubId": "siège 8" }
+let clubMigrated = false;
+
 // Timer
 let timerInterval = null, timerEnd = 0, timerTotal = 0, timerExName = '', timerDone = false;
 let hideTimeout = null; // référence du setTimeout qui masque la barre (évite qu'un ancien ordre efface un nouveau chrono)
 
-const K_PREFS='muscu_v4_prefs', K_W='muscu_v4_weights', K_CUR='muscu_v4_current', K_HIST='muscu_v4_history', K_BW='muscu_v4_bodyweights';
+const K_PREFS='muscu_v4_prefs', K_W='muscu_v4_weights', K_CUR='muscu_v4_current', K_HIST='muscu_v4_history', K_BW='muscu_v4_bodyweights', K_SET='muscu_v4_exsettings';
 
 function save() {
   try {
@@ -258,7 +287,8 @@ function save() {
     localStorage.setItem(K_CUR, JSON.stringify(current));
     localStorage.setItem(K_HIST, JSON.stringify(history));
     localStorage.setItem(K_BW, JSON.stringify(bodyWeights));
-    localStorage.setItem(K_PREFS, JSON.stringify({ autoAlarm, timer: timerEnd>Date.now()?{end:timerEnd,total:timerTotal,name:timerExName}:null }));
+    localStorage.setItem(K_SET, JSON.stringify(exSettings));
+    localStorage.setItem(K_PREFS, JSON.stringify({ autoAlarm, club, clubMigrated, timer: timerEnd>Date.now()?{end:timerEnd,total:timerTotal,name:timerExName}:null }));
   } catch(e) {}
 }
 function load() {
@@ -281,8 +311,26 @@ function load() {
     history = JSON.parse(localStorage.getItem(K_HIST) || '[]');
     bodyWeights = JSON.parse(localStorage.getItem(K_BW) || '[]');
     bodyWeights.sort((a,b)=>a.ts-b.ts);
+    exSettings = JSON.parse(localStorage.getItem(K_SET) || '{}');
     const p = JSON.parse(localStorage.getItem(K_PREFS) || '{}');
     autoAlarm = !!p.autoAlarm;
+    clubMigrated = !!p.clubMigrated;
+
+    // Club actif : celui de la séance en cours s'il y en a une, sinon le dernier utilisé
+    club = CLUBS.some(c=>c.id===p.club) ? p.club : HOME_CLUB;
+    const hasEntries = Object.values(current.entries).some(a=>a && a.length);
+    if (hasEntries && CLUBS.some(c=>c.id===current.club)) club = current.club;
+
+    // Migration unique : tout l'historique existant vient de La Motte-Picquet
+    if (!clubMigrated) {
+      Object.keys(lastWeights).forEach(k=>{
+        if (MACHINE_KEYS.has(k)) { lastWeights[k+'@'+HOME_CLUB] = lastWeights[k]; delete lastWeights[k]; }
+      });
+      history.forEach(h=>{ if(!h.club) h.club = HOME_CLUB; });
+      clubMigrated = true;
+      save();
+    }
+
     if (p.timer && p.timer.end > Date.now()) { timerEnd=p.timer.end; timerTotal=p.timer.total; timerExName=p.timer.name; resumeTimer(); }
   } catch(e) {}
 }
@@ -303,6 +351,45 @@ function aliasGroup(id){
   return g.length ? g : [id];
 }
 
+// --- Clubs ---
+function exById(id){ for(const s of SESSIONS){ const e=s.exercises.find(x=>x.id===id); if(e) return e; } return null; }
+function isMachine(id){ const e=exById(id); return !!(e && e.machine); }
+const MACHINE_KEYS = new Set(
+  SESSIONS.flatMap(s=>s.exercises).filter(e=>e.machine).map(e=>canonicalKey(e.id))
+);
+function clubName(id){ const c=CLUBS.find(x=>x.id===id); return c?c.name:id; }
+// Machines : une mémoire de charge par club. Charges libres : mémoire unique.
+function weightKey(id){ return isMachine(id) ? canonicalKey(id)+'@'+club : canonicalKey(id); }
+function settingKey(id, c){ return canonicalKey(id)+'@'+(c||club); }
+function esc(v){ return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function setClub(v){
+  if(!CLUBS.some(c=>c.id===v)) return;
+  if(v===club){ return; }
+  const hasEntries = Object.values(current.entries).some(a=>a && a.length);
+  if(hasEntries){
+    if(!confirm(`Des séries sont déjà enregistrées dans la séance en cours (${clubName(club)}).\n\nBasculer sur ${clubName(v)} ?`)){
+      renderClubSelect(); return;
+    }
+  }
+  club = v;
+  current.club = v;
+  save(); renderClubSelect();
+  if(tab<4) renderSession(); else if(tab===5) renderHist();
+}
+function renderClubSelect(){
+  const el=document.getElementById('club-select');
+  if(!el) return;
+  el.innerHTML = CLUBS.map(c=>`<option value="${c.id}" ${c.id===club?'selected':''}>RITM ${c.name}</option>`).join('');
+  el.value = club;
+}
+function saveExSetting(exId, val){
+  const k=settingKey(exId);
+  const v=(val||'').trim();
+  if(v) exSettings[k]=v; else delete exSettings[k];
+  save();
+}
+
 function parseTarget(sets){ const m=sets.match(/^(\d+)/); return m?parseInt(m[1]):0; }
 function topReps(sets){ const after=sets.split('×')[1]||''; const nums=after.match(/\d+/g); return nums?nums[nums.length-1]:''; }
 function hasWeight(ex){ return ex.trackWeight !== false; }
@@ -313,12 +400,26 @@ function exComplete(ex){ const t=parseTarget(ex.sets); return t>0 && loggedSets(
 
 function lastHistoryFor(exId){
   const group = aliasGroup(exId);
-  for (let i=history.length-1;i>=0;i--){
-    for (const id of group){
-      if (history[i].entries[id] && history[i].entries[id].length) return { ts: history[i].ts, sets: history[i].entries[id] };
+  const scan = (clubFilter) => {
+    for (let i=history.length-1;i>=0;i--){
+      const h=history[i];
+      const hc = h.club || HOME_CLUB;
+      if (clubFilter && hc !== clubFilter) continue;
+      for (const id of group){
+        if (h.entries[id] && h.entries[id].length) return { ts:h.ts, sets:h.entries[id], club:hc };
+      }
     }
-  }
-  return null;
+    return null;
+  };
+  // Charges libres : un seul historique, tous clubs confondus (20 kg = 20 kg partout)
+  if (!isMachine(exId)){ const r=scan(null); return r ? Object.assign(r,{fallback:false}) : null; }
+  // Machines : historique du club actif, sinon repli explicite
+  const own = scan(club);
+  if (own) return Object.assign(own, {fallback:false});
+  const home = scan(HOME_CLUB);
+  if (home) return Object.assign(home, {fallback:true});
+  const any = scan(null);
+  return any ? Object.assign(any, {fallback:true}) : null;
 }
 function fmtDate(ts){
   const d=new Date(ts);
@@ -386,8 +487,9 @@ function logSet(tabIdx, exId){
   const ri=document.getElementById(`r-${exId}-${idx}`); r=ri?ri.value.trim():'';
   if(!current.entries[exId]) current.entries[exId]=[];
   current.entries[exId].push({w, r});
-  if(hasWeight(ex) && w) lastWeights[canonicalKey(exId)]=w;
+  if(hasWeight(ex) && w) lastWeights[weightKey(exId)]=w;
   if(!current.startedAt) current.startedAt=Date.now();
+  if(!current.club) current.club=club;
   current.lastAt=Date.now();
   save();
   startTimer(ex);
@@ -401,7 +503,7 @@ function resetSession(){
   const ids=SESSIONS[tab].exercises.map(e=>e.id);
   ids.forEach(id=>{ delete current.entries[id]; });
   expandedId=null;
-  if(!Object.values(current.entries).some(a=>a&&a.length)){ current.startedAt=null; current.lastAt=null; staleSession=false; }
+  if(!Object.values(current.entries).some(a=>a&&a.length)){ current.startedAt=null; current.lastAt=null; current.club=club; staleSession=false; }
   save(); renderSession();
 }
 function sameDay(a,b){
@@ -415,8 +517,8 @@ function finishSession(){
   const ts = current.lastAt || current.startedAt || Date.now();
   const d = new Date(ts).toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
   if(!confirm(`Enregistrer cette séance au ${d} ?`)) return;
-  history.push({ ts, date: new Date(ts).toISOString(), entries: JSON.parse(JSON.stringify(current.entries)) });
-  current={ entries:{}, startedAt:null, lastAt:null }; staleSession=false;
+  history.push({ ts, date: new Date(ts).toISOString(), club: current.club || club, entries: JSON.parse(JSON.stringify(current.entries)) });
+  current={ entries:{}, startedAt:null, lastAt:null, club:club }; staleSession=false;
   save(); renderSession();
   alert('Séance enregistrée ✅');
 }
@@ -451,7 +553,7 @@ function renderSession(){
 
   let html=`
     <div class="session-meta">
-      <div class="session-subtitle" style="color:${accent}">${s.subtitle}</div>
+      <div class="session-subtitle" style="color:${accent}">${s.subtitle} <span style="color:#38bdf8">· ${clubName(club)}</span></div>
       <button class="reset-btn" onclick="resetSession()">↺ Reset séance</button>
     </div>
     <div class="progress-row">
@@ -481,6 +583,7 @@ function renderSession(){
               <span class="ex-sets" style="color:${accent}">${ex.sets}</span>
               ${ex.rir?`<span class="ex-series-prog" style="color:#64748b">· RIR ${ex.rir}</span>`:''}
               ${ex.rehab?`<span class="ex-series-prog" style="color:#10b981">· 🦵</span>`:''}
+              ${ex.machine?`<span class="ex-series-prog" style="color:#38bdf8">· ⚙</span>`:''}
               ${done.length>0&&!isDone?`<span class="ex-series-prog">· ${done.length}/${target}</span>`:''}
             </div>
           </div>
@@ -491,13 +594,28 @@ function renderSession(){
         </div>`;
 
     if(isExp){
+      const mach=!!ex.machine;
       const lastH=lastHistoryFor(ex.id);
       let lastStr='';
-      if(lastH){ const arr=lastH.sets.map(x=> hw?`${x.w||'?'}×${x.r||'?'}`:`${x.r||'?'} ${unitLabel(ex)}`).join(' · ');
-        lastStr=`<div class="ref-last">Dernière (${fmtDate(lastH.ts)}) : ${arr}</div>`; }
+      if(lastH){
+        const arr=lastH.sets.map(x=> hw?`${x.w||'?'}×${x.r||'?'}`:`${x.r||'?'} ${unitLabel(ex)}`).join(' · ');
+        if(lastH.fallback){
+          lastStr=`<div class="ref-last" style="color:#94a3b8">Aucun historique à ${clubName(club)} · repère ${clubName(lastH.club)} (${fmtDate(lastH.ts)}) : ${arr}</div>`;
+        } else {
+          lastStr=`<div class="ref-last">Dernière${mach?' à '+clubName(club):''} (${fmtDate(lastH.ts)}) : ${arr}</div>`;
+        }
+      } else if(mach){
+        lastStr=`<div class="ref-last" style="color:#94a3b8">Aucun historique pour cette machine, ni ici ni ailleurs.</div>`;
+      }
+      const clubSet = mach ? (exSettings[settingKey(ex.id)]||'') : '';
 
       html+=`<div class="ex-body">
-        ${ex.ref&&ex.ref!=='—'?`<div class="ref-line">Réglage : <b>${ex.ref}</b></div>`:''}
+        ${mach?`<div class="ref-line" style="margin-bottom:6px"><span class="club-tag">machine</span> <span style="color:#475569">charges suivies par club</span></div>`:''}
+        ${ex.ref&&ex.ref!=='—'?`<div class="ref-line">Réglage type : <b>${ex.ref}</b></div>`:''}
+        ${mach?`<div class="set-note-row">
+          <span class="set-note-label">Réglage à ${clubName(club)}</span>
+          <input class="set-note-input" id="set-${ex.id}" value="${esc(clubSet)}" placeholder="ex : siège 8" onchange="saveExSetting('${ex.id}', this.value)">
+        </div>`:''}
         ${ex.rir?`<div class="ref-line">Réserve visée : <b style="color:${accent}">${ex.rir} rep${ex.rir==='1'?'':'s'} en réserve</b></div>`:''}
         ${lastStr}
         ${ex.rehab?rehabBlock(ex):''}
@@ -505,7 +623,8 @@ function renderSession(){
 
       for(let i=0;i<target;i++){
         const logged = i < done.length ? done[i] : null;
-        const wDefault = logged ? (logged.w||'') : (lastWeights[canonicalKey(ex.id)]||'');
+        const fallbackW = (lastH && lastH.fallback && lastH.sets.length) ? (lastH.sets[lastH.sets.length-1].w||'') : '';
+        const wDefault = logged ? (logged.w||'') : (lastWeights[weightKey(ex.id)] || fallbackW || '');
         const rDefault = logged ? (logged.r||'') : topReps(ex.sets);
         const isCurrent = i===done.length;
         if(logged){
@@ -538,7 +657,7 @@ function renderSession(){
 }
 
 function renderNutri(){
-  let html=`<div class="nutri-section"><div class="nutri-title">MACROS · PHASE SÈCHE</div>`;
+  let html=`<div class="nutri-section"><div class="nutri-title">MACROS · PRISE DE MASSE</div>`;
   NUTRI.forEach(day=>{
     html+=`<div class="nutri-card">
       <div class="nutri-card-header" style="background:${day.color}22"><div class="nutri-card-label" style="color:${day.color}">${day.label}</div></div>
@@ -619,7 +738,7 @@ function renderHist(){
       const isExp=expandedHist===i;
       html+=`<div class="hist-card">
         <div class="hist-head" onclick="toggleHist(${i})">
-          <div class="hist-date">${new Date(h.ts).toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'long'})}</div>
+          <div class="hist-date">${new Date(h.ts).toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'long'})}<span class="hist-club">${clubName(h.club||HOME_CLUB)}</span></div>
           <div class="hist-count">${exIds.length} exos ${isExp?'▲':'▼'}</div>
         </div>`;
       if(isExp){
@@ -732,7 +851,7 @@ function renderWeight(){
 }
 
 function exportData(){
-  const blob=new Blob([JSON.stringify({weights:lastWeights,history,bodyWeights},null,2)],{type:'application/json'});
+  const blob=new Blob([JSON.stringify({weights:lastWeights,history,bodyWeights,exSettings,clubMigrated:true},null,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
   a.href=url; a.download=`muscu-sauvegarde-${new Date().toISOString().slice(0,10)}.json`;
@@ -748,6 +867,9 @@ function importData(e){
       if(data.history) history=data.history;
       if(data.weights) lastWeights=data.weights;
       if(data.bodyWeights) { bodyWeights=data.bodyWeights; bodyWeights.sort((a,b)=>a.ts-b.ts); }
+      if(data.exSettings) exSettings=data.exSettings;
+      history.forEach(h=>{ if(!h.club) h.club=HOME_CLUB; });
+      clubMigrated=true;
       save(); renderHist();
       alert('Sauvegarde importée ✅');
     }catch(err){ alert('Fichier invalide.'); }
@@ -757,6 +879,7 @@ function importData(e){
 
 // ---------- Init ----------
 load();
+renderClubSelect();
 renderTabs();
 renderSession();
 </script>
