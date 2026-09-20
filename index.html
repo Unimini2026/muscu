@@ -138,6 +138,11 @@
   .set-note-label { font-size: 11px; color: #64748b; flex-shrink: 0; }
   .set-note-input { flex: 1; min-width: 0; background: #080c14; border: 1px solid #1e293b; border-radius: 7px; color: #e2e8f0; font-size: 12px; font-weight: 600; padding: 6px 9px; }
   .set-note-input:focus { outline: none; border-color: #38bdf8; }
+  .verdict { border-radius: 12px; padding: 12px 14px; margin: 14px 0 4px; border: 1px solid #1e293b; background: #0d1522; }
+  .verdict-label { font-size: 9px; font-weight: 800; letter-spacing: .08em; color: #64748b; text-transform: uppercase; margin-bottom: 6px; }
+  .verdict-head { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+  .verdict-body { font-size: 12px; color: #94a3b8; line-height: 1.5; }
+  .verdict-meta { font-size: 11px; color: #475569; margin-top: 7px; }
   .hist-club { font-size: 9px; font-weight: 800; color: #38bdf8; background: #0c2a3a; border-radius: 5px; padding: 2px 6px; margin-left: 8px; text-transform: uppercase; letter-spacing: .05em; }
 
   .hidden { display: none !important; }
@@ -146,7 +151,7 @@
 <body>
 
 <div class="header">
-  <div class="header-label">Programme Musculation <span style="color:#22c55e;font-weight:800">· v18</span></div>
+  <div class="header-label">Programme Musculation <span style="color:#22c55e;font-weight:800">· v19</span></div>
   <div class="header-title">Haut du corps<br><span class="header-sub">1 séance / 2 jours</span></div>
 </div>
 
@@ -260,6 +265,7 @@ let history = [];       // [ { date, ts, entries: { exId: [{w,r}] } } ]
 
 let expandedHist = null;
 let bodyWeights = []; // [ { ts, weight } ] sorted by ts asc
+let waists = [];      // [ { ts, cm } ] tour de taille, cadence hebdo
 let staleSession = false; // séance en cours démarrée un autre jour
 
 // Clubs : les machines à sélecteur/plaques n'ont pas la même échelle d'un club à l'autre
@@ -279,7 +285,7 @@ let clubMigrated = false;
 let timerInterval = null, timerEnd = 0, timerTotal = 0, timerExName = '', timerDone = false;
 let hideTimeout = null; // référence du setTimeout qui masque la barre (évite qu'un ancien ordre efface un nouveau chrono)
 
-const K_PREFS='muscu_v4_prefs', K_W='muscu_v4_weights', K_CUR='muscu_v4_current', K_HIST='muscu_v4_history', K_BW='muscu_v4_bodyweights', K_SET='muscu_v4_exsettings';
+const K_PREFS='muscu_v4_prefs', K_W='muscu_v4_weights', K_CUR='muscu_v4_current', K_HIST='muscu_v4_history', K_BW='muscu_v4_bodyweights', K_SET='muscu_v4_exsettings', K_WA='muscu_v4_waists';
 
 function save() {
   try {
@@ -288,6 +294,7 @@ function save() {
     localStorage.setItem(K_HIST, JSON.stringify(history));
     localStorage.setItem(K_BW, JSON.stringify(bodyWeights));
     localStorage.setItem(K_SET, JSON.stringify(exSettings));
+    localStorage.setItem(K_WA, JSON.stringify(waists));
     localStorage.setItem(K_PREFS, JSON.stringify({ autoAlarm, club, clubMigrated, timer: timerEnd>Date.now()?{end:timerEnd,total:timerTotal,name:timerExName}:null }));
   } catch(e) {}
 }
@@ -311,6 +318,8 @@ function load() {
     history = JSON.parse(localStorage.getItem(K_HIST) || '[]');
     bodyWeights = JSON.parse(localStorage.getItem(K_BW) || '[]');
     bodyWeights.sort((a,b)=>a.ts-b.ts);
+    waists = JSON.parse(localStorage.getItem(K_WA) || '[]');
+    waists.sort((a,b)=>a.ts-b.ts);
     exSettings = JSON.parse(localStorage.getItem(K_SET) || '{}');
     const p = JSON.parse(localStorage.getItem(K_PREFS) || '{}');
     autoAlarm = !!p.autoAlarm;
@@ -485,6 +494,7 @@ function logSet(tabIdx, exId){
   let w='', r='';
   if(hasWeight(ex)){ const wi=document.getElementById(`w-${exId}-${idx}`); w=wi?wi.value.trim():''; }
   const ri=document.getElementById(`r-${exId}-${idx}`); r=ri?ri.value.trim():'';
+  if(!w && !r){ alert('Renseigne au moins les reps avant de valider la série.'); return; }
   if(!current.entries[exId]) current.entries[exId]=[];
   current.entries[exId].push({w, r});
   if(hasWeight(ex) && w) lastWeights[weightKey(exId)]=w;
@@ -777,23 +787,75 @@ function addWeightEntry(){
 function deleteWeightEntry(idx){
   if(confirm('Supprimer cette pesée ?')){ bodyWeights.splice(idx,1); save(); renderWeight(); }
 }
-function weightChartSVG(entries){
+function weightChartSVG(entries, key, color){
+  key = key || 'weight'; color = color || '#06b6d4';
   if(entries.length<2) return '';
   const W=100, H=100, PAD=6;
-  const ws=entries.map(e=>e.weight);
+  const ws=entries.map(e=>e[key]);
   let min=Math.min(...ws), max=Math.max(...ws);
   if(min===max){ min-=1; max+=1; }
   const range=max-min;
   const stepX=(W-PAD*2)/(entries.length-1);
   const pts=entries.map((e,i)=>{
     const x=PAD+i*stepX;
-    const y=PAD+(H-PAD*2)*(1-(e.weight-min)/range);
+    const y=PAD+(H-PAD*2)*(1-(e[key]-min)/range);
     return `${x.toFixed(1)},${y.toFixed(1)}`;
   }).join(' ');
   return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:140px;display:block">
-    <polyline points="${pts}" fill="none" stroke="#06b6d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-    ${entries.map((e,i)=>{ const x=PAD+i*stepX; const y=PAD+(H-PAD*2)*(1-(e.weight-min)/range); return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="1.6" fill="#06b6d4"/>`; }).join('')}
+    <polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    ${entries.map((e,i)=>{ const x=PAD+i*stepX; const y=PAD+(H-PAD*2)*(1-(e[key]-min)/range); return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="1.6" fill="${color}"/>`; }).join('')}
   </svg>`;
+}
+
+// ---------- Tour de taille ----------
+function addWaistEntry(){
+  const input=document.getElementById('waist-new-input');
+  const val=parseFloat((input.value||'').replace(',','.'));
+  if(!val || val<40 || val>200){ alert('Entre un tour de taille valide (cm).'); return; }
+  const today=new Date(); today.setHours(12,0,0,0);
+  const todayKey=today.toISOString().slice(0,10);
+  const i=waists.findIndex(e=> new Date(e.ts).toISOString().slice(0,10)===todayKey);
+  if(i>=0){ waists[i].cm=val; } else { waists.push({ ts: today.getTime(), cm: val }); }
+  waists.sort((a,b)=>a.ts-b.ts);
+  save(); renderWeight();
+}
+function deleteWaistEntry(idx){
+  if(confirm('Supprimer cette mesure ?')){ waists.splice(idx,1); save(); renderWeight(); }
+}
+// Moyenne des pesées sur les 7 jours se terminant à ts (lisse le bruit quotidien)
+function avgWeightTo(ts){
+  const lo=ts-6*86400000;
+  const sel=bodyWeights.filter(e=>e.ts>=lo && e.ts<=ts+86400000);
+  if(!sel.length) return null;
+  return sel.reduce((a,b)=>a+b.weight,0)/sel.length;
+}
+// Lecture croisée poids / tour de taille sur ~4 semaines
+function bodyRead(){
+  const ws=[...waists].sort((a,b)=>a.ts-b.ts);
+  if(ws.length<4) return { ready:false, reason:'count', n:ws.length };
+  const last=ws[ws.length-1];
+  let ref=null;
+  for(let i=ws.length-2;i>=0;i--){ if(last.ts-ws[i].ts>=21*86400000){ ref=ws[i]; break; } }
+  if(!ref) return { ready:false, reason:'span', n:ws.length };
+  const wNow=avgWeightTo(last.ts), wRef=avgWeightTo(ref.ts);
+  if(wNow==null||wRef==null) return { ready:false, reason:'weight', n:ws.length };
+  const dW=wNow-wRef, dC=last.cm-ref.cm;
+  const days=Math.round((last.ts-ref.ts)/86400000);
+  const sW = dW>0.3 ? 'up' : (dW<-0.3 ? 'down' : 'flat');
+  const sC = dC>0.5 ? 'up' : (dC<-0.5 ? 'down' : 'flat');
+  const M={
+    'up|flat':   ['#22c55e','Prise propre','Le poids monte, la taille ne bouge pas. Ne touche à rien.'],
+    'up|down':   ['#22c55e','Recomposition','Le poids monte et la taille baisse. Cas rare et excellent. Ne touche à rien.'],
+    'up|up':     ['#f59e0b','Prise de gras','Le poids et la taille montent ensemble. Baisse de 150 kcal.'],
+    'flat|flat': ['#38bdf8','Stagnation','Rien ne bouge depuis un mois. Ajoute 150 à 200 kcal.'],
+    'flat|down': ['#22c55e','Recomposition','Poids stable, taille qui baisse. Tu échanges du gras contre du muscle.'],
+    'flat|up':   ['#f59e0b','Composition qui se dégrade','Poids stable mais taille qui monte. Baisse de 150 kcal.'],
+    'down|down': ['#38bdf8','Perte de poids','Tu perds du poids alors que tu vises une prise. Ajoute 200 kcal.'],
+    'down|flat': ['#38bdf8','Perte de poids','Le poids baisse, la taille tient. Ajoute 200 kcal.'],
+    'down|up':   ['#f59e0b','Signal incohérent','Poids en baisse, taille en hausse. Vérifie ton protocole de mesure.'],
+  };
+  const v=M[sW+'|'+sC];
+  return { ready:true, color:v[0], head:v[1], body:v[2], dW, dC, days, n:ws.length };
 }
 function renderWeight(){
   const sorted=[...bodyWeights].sort((a,b)=>a.ts-b.ts);
@@ -847,11 +909,73 @@ function renderWeight(){
     }
   }
   html+=`</div>`;
+
+  // ----- Tour de taille -----
+  const wa=[...waists].sort((a,b)=>a.ts-b.ts);
+  const wl=wa[wa.length-1], wp=wa[wa.length-2];
+  let monthRef=null;
+  if(wl){ const t=wl.ts-28*86400000; for(let i=wa.length-1;i>=0;i--){ if(wa[i].ts<=t){ monthRef=wa[i]; break; } } }
+  const dPrev = (wl&&wp)? (wl.cm-wp.cm) : null;
+  const dMonth = (wl&&monthRef)? (wl.cm-monthRef.cm) : null;
+
+  html+=`<div class="weight-section">
+    <div class="weight-title">TOUR DE TAILLE</div>
+    <div class="weight-sub">Au nombril, le matin à jeun, 1× par semaine</div>
+    <div class="weight-input-row">
+      <input class="weight-input" id="waist-new-input" inputmode="decimal" placeholder="ex: 84,5" value="${wl?String(wl.cm).replace('.',','):''}">
+      <button class="weight-add-btn" onclick="addWaistEntry()">Enregistrer</button>
+    </div>`;
+
+  if(wl){
+    html+=`<div class="weight-stats-row">
+      <div class="weight-stat"><div class="weight-stat-label">Dernière</div><div class="weight-stat-value">${String(wl.cm).replace('.',',')} cm</div></div>
+      <div class="weight-stat"><div class="weight-stat-label">Vs précédente</div><div class="weight-stat-value" style="color:${dPrev==null?'#475569':dPrev<=0?'#22c55e':'#f59e0b'}">${dPrev==null?'—':(dPrev>0?'+':'')+dPrev.toFixed(1).replace('.',',')+' cm'}</div></div>
+      <div class="weight-stat"><div class="weight-stat-label">Vs il y a 4 sem.</div><div class="weight-stat-value" style="color:${dMonth==null?'#475569':dMonth<=0?'#22c55e':'#f59e0b'}">${dMonth==null?'—':(dMonth>0?'+':'')+dMonth.toFixed(1).replace('.',',')+' cm'}</div></div>
+    </div>`;
+  }
+
+  if(wa.length>=2){ html+=`<div class="weight-chart-wrap">${weightChartSVG(wa.slice(-20),'cm','#f59e0b')}</div>`; }
+
+  const rd=bodyRead();
+  if(rd.ready){
+    html+=`<div class="verdict" style="border-color:${rd.color}55">
+      <div class="verdict-label">Lecture croisée</div>
+      <div class="verdict-head" style="color:${rd.color}">${rd.head}</div>
+      <div class="verdict-body">${rd.body}</div>
+      <div class="verdict-meta">Sur ${rd.days} jours : poids ${(rd.dW>0?'+':'')+rd.dW.toFixed(2).replace('.',',')} kg (moyenne 7j) · taille ${(rd.dC>0?'+':'')+rd.dC.toFixed(1).replace('.',',')} cm</div>
+    </div>`;
+  } else {
+    const msg = rd.reason==='span'
+      ? `${rd.n} mesures, mais moins de 3 semaines d'écart. La lecture s'affichera quand l'historique sera assez long.`
+      : rd.reason==='weight'
+      ? `Pas assez de pesées autour des mesures pour croiser les deux courbes.`
+      : `${rd.n} mesure${rd.n>1?'s':''} sur 4 minimum. En dessous, tu ne lis que du bruit.`;
+    html+=`<div class="verdict"><div class="verdict-label">Lecture croisée</div><div class="verdict-body">${msg}</div></div>`;
+  }
+
+  if(wa.length===0){
+    html+=`<div class="empty">Aucune mesure enregistrée.<br>Même jour, même heure, à jeun, en fin d'expiration.</div>`;
+  } else {
+    for(let i=wa.length-1;i>=0;i--){
+      const e=wa[i], pr=wa[i-1];
+      const d = pr ? (e.cm-pr.cm) : null;
+      html+=`<div class="weight-row">
+        <span class="weight-row-date">${new Date(e.ts).toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'short'})}</span>
+        <div class="weight-row-right">
+          ${d!=null?`<span class="weight-row-delta" style="color:${d<=0?'#22c55e':'#f59e0b'}">${d>0?'+':''}${d.toFixed(1).replace('.',',')}</span>`:''}
+          <span class="weight-row-val">${String(e.cm).replace('.',',')} cm</span>
+          <button class="weight-del" onclick="deleteWaistEntry(${i})">✕</button>
+        </div>
+      </div>`;
+    }
+  }
+  html+=`</div>`;
+
   document.getElementById('weight-content').innerHTML=html;
 }
 
 function exportData(){
-  const blob=new Blob([JSON.stringify({weights:lastWeights,history,bodyWeights,exSettings,clubMigrated:true},null,2)],{type:'application/json'});
+  const blob=new Blob([JSON.stringify({weights:lastWeights,history,bodyWeights,waists,exSettings,clubMigrated:true},null,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
   a.href=url; a.download=`muscu-sauvegarde-${new Date().toISOString().slice(0,10)}.json`;
@@ -867,6 +991,7 @@ function importData(e){
       if(data.history) history=data.history;
       if(data.weights) lastWeights=data.weights;
       if(data.bodyWeights) { bodyWeights=data.bodyWeights; bodyWeights.sort((a,b)=>a.ts-b.ts); }
+      if(data.waists) { waists=data.waists; waists.sort((a,b)=>a.ts-b.ts); }
       if(data.exSettings) exSettings=data.exSettings;
       history.forEach(h=>{ if(!h.club) h.club=HOME_CLUB; });
       clubMigrated=true;
