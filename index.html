@@ -151,7 +151,7 @@
 <body>
 
 <div class="header">
-  <div class="header-label">Programme Musculation <span style="color:#22c55e;font-weight:800">· v19</span></div>
+  <div class="header-label">Programme Musculation <span style="color:#22c55e;font-weight:800">· v20</span></div>
   <div class="header-title">Haut du corps<br><span class="header-sub">1 séance / 2 jours</span></div>
 </div>
 
@@ -192,52 +192,53 @@
 const SESSIONS = [
   { id:'force', name:'FORCE', subtitle:'Charge max · Reps basses', color:'#ef4444', exercises:[
     {id:'f1',name:'Développé couché barre',sets:'4×4–6',ref:'—',rir:'2–3',warmup:true,restDisplay:'2m30–3m',restSec:165},
-    {id:'f2',machine:true,name:'Tractions assistées',sets:'4×4–6',ref:'—',rir:'2–3',restDisplay:'2m–2m30',restSec:135},
-    {id:'f3',machine:true,name:'Row assis',sets:'3×6–8',ref:'—',rir:'2–3',restDisplay:'2m',restSec:120},
-    {id:'f4',name:'Développé incliné haltères',sets:'2×6–8',ref:'—',rir:'2',restDisplay:'1m45–2m',restSec:112},
+    {id:'f2',machine:true,name:'Tractions assistées',sets:'4×4–6',ref:'—',rir:'2–3',restDisplay:'2m–2m30',restSec:135,note:'Sans sangles (elles se prennent mal sur la machine).'},
+    {id:'f3',machine:true,name:'Row assis',sets:'3×6–8',ref:'—',rir:'2–3',restDisplay:'2m',restSec:120,note:'Sangles sur toutes les séries, même charge qu\'avec la prise normale.'},
+    {id:'f4',name:'Développé incliné haltères',sets:'2×6–8',ref:'Banc à 30°',rir:'2',restDisplay:'1m45–2m',restSec:112,note:'Omoplates plaquées, cambrure légère, coudes à 45°.'},
     {id:'f5',name:'Élévations latérales',sets:'3×12–20',ref:'6→5→4 (dégressif)',rehab:'Spanish squat 3×60s',rir:'0–1',restDisplay:'1m45',restSec:105,note:'⚠️ Tension épaule : 4 kg (voire 3), RPE 6–7 max, mouvement lent.'},
-    {id:'f6',machine:true,name:'Triceps corde',sets:'2×10–15',ref:'—',rir:'0–1',restDisplay:'1m–1m15',restSec:67},
-    {id:'f7',name:'Curl incliné',sets:'2×10–15',ref:'Dégressif',rir:'0–1',restDisplay:'1m',restSec:60},
-    {id:'f8',machine:true,name:'Cable crunch',sets:'3×10–15',ref:'—',rehab:'Sit-to-stand 3×12',rir:'1',restDisplay:'1m45',restSec:105},
-    {id:'f9',name:'Captain chair knee raise',sets:'3×10–15',ref:'—',trackWeight:false,rir:'1',restDisplay:'1m',restSec:60},
+    {id:'f6',machine:true,name:'Triceps corde',sets:'2×10–15',ref:'—',rir:'0–1',restDisplay:'45s',restSec:45,note:'En alternance avec le curl incliné : triceps, 45 s, curl, 45 s. Poignet fixe en bas.'},
+    {id:'f7',name:'Curl incliné',sets:'2×10–15',ref:'Banc 45–60°',rir:'0–1',restDisplay:'45s (alterné) / 1m30',restSec:45,note:'Alterné avec le triceps corde : 45 s. Fait seul : 1m30 minimum entre les séries.'},
+    {id:'f8',machine:true,name:'Cable crunch',sets:'3×10–15',ref:'—',rir:'1',restDisplay:'1m',restSec:60,note:'Hanches fixes, ne pas s\'asseoir sur les talons.'},
+    {id:'f9',name:'Knee raise au sol',sets:'3×10–15',ref:'Sans poids',trackWeight:false,rir:'1',restDisplay:'1m',restSec:60},
   ]},
   { id:'volume', name:'VOLUME', subtitle:'Reps moyennes · Repos courts', color:'#3b82f6', exercises:[
-    {id:'v1',name:'Overhead press',sets:'3×6–10',ref:'—',rehab:'Spanish squat 3×60s',rir:'1–2',warmup:true,restDisplay:'1m45–2m',restSec:112},
-    {id:'v2',machine:true,name:'Tirage vertical neutre',sets:'3×8–12',ref:'—',rir:'1–2',restDisplay:'1m30–2m',restSec:105},
-    {id:'v3',name:'Développé haltères plat',sets:'3×8–12',ref:'—',rehab:'Sit-to-stand 3×12',rir:'1–2',restDisplay:'1m30–2m',restSec:105},
-    {id:'v4',machine:true,name:'Row assis poulie',sets:'3×8–12',ref:'—',rir:'1–2',restDisplay:'1m30',restSec:90},
-    {id:'v5',machine:true,name:'Reverse pec deck',sets:'3×12–20',ref:'Siège pos. 2/3/4',rir:'0–1',restDisplay:'1m–1m15',restSec:67},
+    {id:'v1',name:'Overhead press',sets:'3×6–10',ref:'Position fendue',rir:'1–2',warmup:true,restDisplay:'1m45–2m',restSec:112,note:'Fessiers et abdos serrés, côtes rentrées : pas de cambrure.'},
+    {id:'v2',machine:true,name:'Tirage vertical neutre',sets:'3×8–12',ref:'—',rir:'1–2',restDisplay:'1m30–2m',restSec:105,note:'Sangles sur toutes les séries, même charge.'},
+    {id:'v3',name:'Développé haltères plat',sets:'3×8–12',ref:'—',rir:'1–2',restDisplay:'1m30–2m',restSec:105,note:'Omoplates plaquées, pas d\'arche, coudes à 45°, semi-pronation.'},
+    {id:'v4',machine:true,name:'Row assis poulie',sets:'3×8–12',ref:'—',rir:'1–2',restDisplay:'1m30',restSec:90,note:'Sangles sur toutes les séries, même charge.'},
+    {id:'v5',machine:true,name:'Reverse pec deck',sets:'3×12–20',ref:'Siège pos. 2/3/4',rir:'0–1',restDisplay:'1m–1m15',restSec:67,note:'Pas de machine à Motte-Picquet : reverse fly unilatéral poulie, noté ici (charges suivies par club).'},
     {id:'v6',machine:true,name:'Dips assistés',sets:'2×8–12',ref:'—',rir:'1–2',restDisplay:'1m30',restSec:90},
-    {id:'v7',name:'Curl EZ',sets:'2×8–12',ref:'—',rir:'0–1',restDisplay:'1m',restSec:60},
-    {id:'v8',name:'Élévations latérales',sets:'2×15–25',ref:'—',rir:'0–1',restDisplay:'45s–1m',restSec:52},
-    {id:'v9',machine:true,name:'Cable crunch',sets:'3×10–15',ref:'—',rir:'1',restDisplay:'1m',restSec:60},
-    {id:'v10',name:'Captain chair knee raise',sets:'3×10–15',ref:'—',trackWeight:false,rir:'1',restDisplay:'1m',restSec:60},
+    {id:'v7',name:'Curl EZ',sets:'2×8–12',ref:'Barre 10 kg',rir:'0–1',restDisplay:'1m30–2m',restSec:105,note:'Rester à 30 kg jusqu\'à 12 + 12, puis passer à 35 kg.'},
+    {id:'v8',name:'Élévations latérales',sets:'2×15–25',ref:'—',rehab:'Spanish squat 3×60s',rir:'0–1',restDisplay:'1m45',restSec:105},
+    {id:'v9',machine:true,name:'Cable crunch',sets:'3×10–15',ref:'—',rir:'1',restDisplay:'1m',restSec:60,note:'Hanches fixes.'},
+    {id:'v10',name:'Knee raise au sol',sets:'3×10–15',ref:'Sans poids',trackWeight:false,rir:'1',restDisplay:'1m',restSec:60},
   ]},
   { id:'hyper', name:'HYPER', subtitle:'Reps hautes · Focus tension', color:'#a855f7', exercises:[
-    {id:'h1',machine:true,name:'Supine press / Chest press',sets:'3×8–12',ref:'—',rehab:'Spanish squat 3×60s',rir:'1',warmup:true,restDisplay:'2m',restSec:120},
-    {id:'h2',machine:true,name:'Tirage vertical variante',sets:'3×8–12',ref:'Prise large ou supination',rir:'1',restDisplay:'1m30',restSec:90},
-    {id:'h3',name:'Row unilatéral haltère',sets:'3×10–12',ref:'—',rehab:'Sit-to-stand 3×12',rir:'1',restDisplay:'1m45',restSec:105},
-    {id:'h4',machine:true,name:'Chest fly machine',sets:'3×12–15',ref:'Siège pos. 5/6/7',rir:'0–1',restDisplay:'1m',restSec:60},
-    {id:'h5',name:'Élévations latérales',sets:'3×15–20',ref:'—',rir:'0–1',restDisplay:'45s–1m',restSec:52,note:'⚠️ Tension épaule : 4 kg (voire 3), RPE 6–7 max.'},
-    {id:'h6',machine:true,name:'Reverse fly unilatéral poulie',sets:'3×12–20',ref:'Réglage 16',rir:'0–1',restDisplay:'1m',restSec:60,note:'Ne pas bouger le poignet.'},
-    {id:'h7',name:'Curl incliné',sets:'3×10–12',ref:'Banc 45° (pos. 3)',rir:'0–1',restDisplay:'1m',restSec:60},
-    {id:'h8',machine:true,name:'Triceps corde',sets:'3×12–15',ref:'—',rir:'0–1',restDisplay:'1m',restSec:60},
-    {id:'h9',machine:true,name:'Cable crunch',sets:'3×10–15',ref:'—',rir:'1',restDisplay:'1m',restSec:60},
-    {id:'h10',name:'Captain chair knee raise',sets:'3×10–15',ref:'—',trackWeight:false,rir:'1',restDisplay:'1m',restSec:60},
+    {id:'h1',machine:true,name:'Supine press / Chest press',sets:'3×8–12',ref:'—',rir:'1',warmup:true,restDisplay:'2m',restSec:120},
+    {id:'h2',machine:true,name:'Tirage vertical variante',sets:'3×8–12',ref:'Barre droite, supination, mains largeur d\'épaules',rir:'1',restDisplay:'1m30',restSec:90,note:'Sangles sur toutes les séries, même charge.'},
+    {id:'h3',name:'Row unilatéral haltère',sets:'3×10–12',ref:'Haltère ou kettlebell',rir:'1',restDisplay:'1m45',restSec:105,note:'Prochain palier : 28 kg. Buste fixe, tirer vers la hanche.'},
+    {id:'h4',machine:true,name:'Chest fly machine',sets:'3×12–15',ref:'Siège pos. 5/6/7 · fixation 8',rir:'0–1',restDisplay:'1m',restSec:60},
+    {id:'h5',name:'Élévations latérales',sets:'3×15–20',ref:'—',rehab:'Spanish squat 3×60s',rir:'0–1',restDisplay:'1m45',restSec:105,note:'⚠️ Tension épaule : 4 kg (voire 3), RPE 6–7 max.'},
+    {id:'h6',machine:true,name:'Reverse fly unilatéral poulie',sets:'3×12–20',ref:'Réglage 16',rir:'0–1',restDisplay:'1m',restSec:60,note:'Épaule basse, loin de l\'oreille. Arrêt quand le bras arrive sur la ligne des épaules.'},
+    {id:'h7',name:'Curl incliné',sets:'3×10–12',ref:'Banc 45–60°',rir:'0–1',restDisplay:'1m30',restSec:90},
+    {id:'h8',machine:true,name:'Triceps corde',sets:'3×12–15',ref:'—',rir:'0–1',restDisplay:'1m',restSec:60,note:'Poignet fixe en bas.'},
+    {id:'h9',machine:true,name:'Cable crunch',sets:'3×10–15',ref:'—',rir:'1',restDisplay:'1m',restSec:60,note:'Hanches fixes.'},
+    {id:'h10',name:'Knee raise au sol',sets:'3×10–15',ref:'Sans poids',trackWeight:false,rir:'1',restDisplay:'1m',restSec:60},
   ]},
-  { id:'rehab', name:'RÉÉDU', subtitle:'Genou · 10–12 min en fin de séance', color:'#10b981', exercises:[
-    {id:'r1',name:'Spanish squat',sets:'3×60s',ref:'—',unit:'sec',trackWeight:false,restDisplay:'1m',restSec:60},
-    {id:'r2',name:'Sit-to-stand',sets:'3×12',ref:'20 kg (haltère/sac contre la poitrine)',unit:'reps',restDisplay:'1m',restSec:60,note:'Descente lente et freinée : effleurer l\'assise, ne pas s\'affaler. Si la technique se dégrade, redescendre à 17,5 kg.'},
-    {id:'r3',name:'Marche inclinée',sets:'1×10min',ref:'Inclinaison 7% · 5 km/h',unit:'min',trackWeight:false,restDisplay:'—',restSec:0,note:'Arrêt immédiat si douleur. Peut servir d\'échauffement en début de routine.'},
+  { id:'rehab', name:'JAMBES', subtitle:'Fin de séance · presse et sit-to-stand en alternance', color:'#10b981', exercises:[
+    {id:'r3',name:'Marche inclinée',sets:'1×5min',ref:'Inclinaison 7% · 5 km/h',unit:'min',trackWeight:false,restDisplay:'—',restSec:0,note:'En échauffement, au début de la séance.'},
+    {id:'r1',name:'Spanish squat',sets:'3×60s',ref:'Intercalé pendant les élévations latérales',unit:'sec',trackWeight:false,restDisplay:'1m',restSec:60},
+    {id:'r4',machine:true,name:'Presse à cuisses',sets:'3×12',ref:'Départ 40 kg · +10 kg si les 2 jours suivants sont calmes',unit:'reps',restDisplay:'2m',restSec:120,note:'Une séance sur deux, en alternance avec le sit-to-stand. Pieds au milieu, largeur de bassin. Descente en 3 s jusqu\'à 90° max, ne pas verrouiller en haut. Stop si la hanche droite se manifeste.'},
+    {id:'r2',name:'Sit-to-stand',sets:'3×12',ref:'20 kg (haltère/sac contre la poitrine)',unit:'reps',restDisplay:'1m',restSec:60,note:'Une séance sur deux, en alternance avec la presse. Descente lente et freinée, ne pas s\'affaler.'},
   ]},
 ];
 
 const NUTRI = [
-  {label:'PRISE DE MASSE · DEPUIS LE 8 SEPT.', color:'#10b981', items:[
-    ['Repos, sans service','2 600–2 700 kcal'],
-    ['Repos + service resto','2 800–2 900 kcal'],
-    ['Sport, sans service','2 800–2 900 kcal'],
-    ['Sport + service resto','3 000–3 100 kcal'],
+  {label:'PRISE DE MASSE · DEPUIS LE 30 SEPT.', color:'#10b981', items:[
+    ['Repos, sans service','2 800–2 900 kcal'],
+    ['Repos + service resto','3 000–3 100 kcal'],
+    ['Sport, sans service','3 000–3 100 kcal'],
+    ['Sport + service resto','3 200–3 300 kcal'],
   ]},
   {label:'CONSTANTES', color:'#f59e0b', items:[
     ['Protéines','170 g / jour'],
@@ -245,13 +246,14 @@ const NUTRI = [
   ]},
   {label:'PILOTAGE', color:'#3b82f6', items:[
     ['Objectif','+0,2–0,3 kg / semaine'],
-    ['Point de départ','83,2 kg (8 sept.)'],
+    ['Référence','83,0 kg (moyenne fin sept.)'],
     ['Si stagnation 2 sem.','+150–200 kcal'],
     ['Si >0,4–0,5 kg/sem','−150 kcal'],
+    ['Juge de paix','moyenne 7 j + tour de taille'],
   ]},
-  {label:'VÉLO ÉLECTRIQUE (LUN–VEN)', color:'#a855f7', items:[
-    ['Trajets','2 × 20 min, assistance forte'],
-    ['Impact','~100 kcal · déjà absorbé'],
+  {label:'ASTUCES', color:'#a855f7', items:[
+    ['Ajouts caloriques','aliments pesés (avoine, riz, pain)'],
+    ['Repas salé / fast-food','pic d\'eau 1–3 j, ne pas sauter la pesée'],
   ]},
 ];
 
