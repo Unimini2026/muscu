@@ -153,7 +153,7 @@
 <body>
 
 <div class="header">
-  <div class="header-label">Programme Musculation <span style="color:#22c55e;font-weight:800">· v21</span></div>
+  <div class="header-label">Programme Musculation <span style="color:#22c55e;font-weight:800">· v22</span></div>
   <div class="header-title">Haut du corps<br><span class="header-sub">1 séance / 2 jours</span></div>
 </div>
 
@@ -193,47 +193,52 @@
 <script>
 const SESSIONS = [
   { id:'force', name:'FORCE', subtitle:'Charge max · Reps basses', color:'#ef4444', exercises:[
-    {id:'f1',ss:'A1',name:'Développé couché barre',sets:'4×4–6',ref:'—',rir:'2–3',warmup:true,restDisplay:'1m30',restSec:90},
-    {id:'f2',ss:'A2',machine:true,name:'Tractions assistées',sets:'4×4–6',ref:'—',rir:'2–3',restDisplay:'1m30',restSec:90,note:'Sans sangles (elles se prennent mal sur la machine).'},
+    {id:'f1',ss:'A1',name:'Développé couché barre',sets:'4×4–6',ref:'—',rir:'2–3',warmup:true,restDisplay:'1m30',restSec:90,note:'Omoplates serrées et basses. Si l\'avant de l\'épaule se réveille : baisser la charge, puis arrêter si ça persiste.'},
+    {id:'f2',ss:'A2',machine:true,name:'Tractions assistées',sets:'4×4–6',ref:'—',rir:'2–3',restDisplay:'1m30',restSec:90,note:'Sans sangles. Bras tendus en bas autorisés, mais omoplates engagées vers le bas : pas de suspension relâchée.'},
     {id:'f4',ss:'B1',name:'Développé incliné haltères',sets:'2×6–8',ref:'Banc à 30°',rir:'2',restDisplay:'1m15',restSec:75,note:'Omoplates plaquées, cambrure légère, coudes à 45°.'},
-    {id:'f3',ss:'B2',machine:true,name:'Row assis',sets:'3×6–8',ref:'—',rir:'2–3',restDisplay:'1m15',restSec:75,note:'Sangles sur toutes les séries. La 3e série se fait seule (le développé incliné n\'en a que 2).'},
+    {id:'f3',ss:'B2',machine:true,name:'Row assis',sets:'3×6–8',ref:'—',rir:'2–3',restDisplay:'1m15',restSec:75,note:'Sans sangles. Épaules basses, buste fixe. La 3e série se fait seule (le développé incliné n\'en a que 2).'},
     {id:'f6',ss:'C1',machine:true,name:'Triceps corde',sets:'2×10–15',ref:'—',rir:'0–1',restDisplay:'45s',restSec:45,note:'Poignet fixe en bas.'},
-    {id:'f7',ss:'C2',name:'Curl incliné',sets:'2×10–15',ref:'Banc 45–60°',rir:'0–1',restDisplay:'45s',restSec:45},
-    {id:'f5',name:'Élévations latérales',sets:'3×12–20',ref:'6→5→4 (dégressif)',rehab:'Spanish squat 3×60s',rir:'0–1',restDisplay:'1m45',restSec:105,note:'⚠️ Tension épaule : 4 kg (voire 3), RPE 6–7 max, mouvement lent.'},
-    {id:'f8',machine:true,name:'Cable crunch',sets:'3×10–15',ref:'—',rir:'1',restDisplay:'1m',restSec:60,note:'Hanches fixes, ne pas s\'asseoir sur les talons.'},
+    {id:'f10',ss:'C2',name:'Curl EZ debout',sets:'2×10–15',ref:'Barre 10 kg',rir:'2',restDisplay:'45s',restSec:45,note:'Remplace le curl incliné, en pause depuis le 23/11 (avant de l\'épaule). Coudes collés au corps, sans élan. Stop à la moindre douleur à l\'avant de l\'épaule.'},
+    {id:'f5',name:'Élévations latérales',sets:'3×12–20',ref:'—',rehab:'Spanish squat 3×60s',rir:'0–1',restDisplay:'1m45',restSec:105,note:'Épaules basses, arrêt juste sous la hauteur des épaules. Si la nuque ou le trapèze tire : plus léger.'},
+    {id:'f8',machine:true,name:'Cable crunch',sets:'3×10–15',ref:'—',rir:'1',restDisplay:'1m',restSec:60,note:'Hanches fixes, ne pas s\'asseoir sur les talons. En superset avec la presse ou la fente arrière.'},
   ]},
   { id:'volume', name:'VOLUME', subtitle:'Reps moyennes · Repos courts', color:'#3b82f6', exercises:[
-    {id:'v1',ss:'A1',name:'Overhead press',sets:'3×6–10',ref:'Position fendue',rir:'1–2',warmup:true,restDisplay:'1m',restSec:60,note:'Fessiers et abdos serrés, côtes rentrées : pas de cambrure.'},
-    {id:'v2',ss:'A2',machine:true,name:'Tirage vertical neutre',sets:'3×8–12',ref:'—',rir:'1–2',restDisplay:'1m',restSec:60,note:'Sangles sur toutes les séries, même charge.'},
+    {id:'v1',ss:'A1',name:'Overhead press',sets:'3×6–10',ref:'Position fendue',rir:'1–2',warmup:true,restDisplay:'1m',restSec:60,note:'Fessiers et abdos serrés, côtes rentrées : pas de cambrure. Tête dans l\'axe, pas de haussement volontaire des épaules.'},
+    {id:'v2',ss:'A2',machine:true,name:'Tirage vertical barre pronation',sets:'3×8–12',ref:'Barre droite, mains un peu plus larges que les épaules',rir:'1–2',restDisplay:'1m',restSec:60,note:'Sans sangles. Tirer vers le haut de la poitrine. Bras tendus en haut autorisés, omoplates engagées. Poignée neutre serrée exclue (tension omoplate en octobre).'},
     {id:'v3',ss:'B1',name:'Développé haltères plat',sets:'3×8–12',ref:'—',rir:'1–2',restDisplay:'1m',restSec:60,note:'Omoplates plaquées, pas d\'arche, coudes à 45°, semi-pronation.'},
-    {id:'v4',ss:'B2',machine:true,name:'Row assis poulie',sets:'3×8–12',ref:'—',rir:'1–2',restDisplay:'1m',restSec:60,note:'Sangles sur toutes les séries, même charge.'},
-    {id:'v5',ss:'C1',machine:true,name:'Reverse pec deck',sets:'3×12–20',ref:'Siège pos. 2/3/4',rir:'0–1',restDisplay:'1m',restSec:60,note:'Pas de machine à Motte-Picquet : reverse fly unilatéral poulie, noté ici (charges suivies par club). 3e série seule.'},
+    {id:'v4',ss:'B2',machine:true,name:'Row assis poulie',sets:'3×8–12',ref:'24 kg à Motte-Picquet',rir:'1–2',restDisplay:'1m',restSec:60,note:'Sans sangles. Épaules basses, buste fixe, tirer vers le nombril.'},
+    {id:'v5',ss:'C1',machine:true,name:'Reverse pec deck',sets:'3×12–20',ref:'Siège pos. 2/3/4',rir:'0–1',restDisplay:'1m',restSec:60,note:'Ternes : reverse pec deck. Motte-Picquet (pas de machine) : reverse fly haltères, poitrine sur banc incliné, 4–6 kg. Épaules basses, arrêt quand les bras sont dans le prolongement des épaules. 3e série seule.'},
     {id:'v6',ss:'C2',machine:true,name:'Dips assistés',sets:'2×8–12',ref:'—',rir:'1–2',restDisplay:'1m',restSec:60},
-    {id:'v7',ss:'D1',name:'Curl EZ',sets:'2×8–12',ref:'Barre 10 kg',rir:'0–1',restDisplay:'1m',restSec:60,note:'Rester à 30 kg jusqu\'à 12 + 12, puis passer à 35 kg.'},
-    {id:'v8',ss:'D2',name:'Élévations latérales',sets:'2×15–25',ref:'—',rehab:'Spanish squat 3×60s',rir:'0–1',restDisplay:'1m15',restSec:75,note:'La 3e série de Spanish squat se fait avec le cable crunch.'},
-    {id:'v9',machine:true,name:'Cable crunch',sets:'3×10–15',ref:'—',rir:'1',restDisplay:'1m',restSec:60,note:'Hanches fixes.'},
+    {id:'v7',ss:'D1',name:'Curl EZ',sets:'2×8–12',ref:'Barre 10 kg',rir:'1–2',restDisplay:'1m',restSec:60,note:'Coudes collés au corps, sans élan. Pas d\'échec tant que l\'avant de l\'épaule est à surveiller.'},
+    {id:'v8',ss:'D2',name:'Élévations latérales',sets:'2×15–25',ref:'—',rehab:'Spanish squat 3×60s',rir:'0–1',restDisplay:'1m15',restSec:75,note:'Épaules basses, arrêt juste sous la hauteur des épaules. La 3e série de Spanish squat se fait avec le cable crunch.'},
+    {id:'v9',machine:true,name:'Cable crunch',sets:'3×10–15',ref:'—',rir:'1',restDisplay:'1m',restSec:60,note:'Hanches fixes. En superset avec la presse ou la fente arrière.'},
   ]},
   { id:'hyper', name:'HYPER', subtitle:'Reps hautes · Focus tension', color:'#a855f7', exercises:[
     {id:'h1',ss:'A1',machine:true,name:'Supine press / Chest press',sets:'3×8–12',ref:'—',rir:'1',warmup:true,restDisplay:'1m15',restSec:75},
-    {id:'h2',ss:'A2',machine:true,name:'Tirage vertical variante',sets:'3×8–12',ref:'Barre droite, supination, mains largeur d\'épaules',rir:'1',restDisplay:'1m15',restSec:75,note:'Sangles sur toutes les séries, même charge.'},
-    {id:'h4',ss:'B1',machine:true,name:'Chest fly machine',sets:'3×12–15',ref:'Siège pos. 5/6/7 · fixation 8',rir:'0–1',restDisplay:'1m',restSec:60},
-    {id:'h3',ss:'B2',name:'Row unilatéral haltère',sets:'3×10–12',ref:'Haltère ou kettlebell',rir:'1',restDisplay:'1m',restSec:60,note:'Prochain palier : 28 kg. Buste fixe, tirer vers la hanche.'},
-    {id:'h5',ss:'C1',name:'Élévations latérales',sets:'3×15–20',ref:'—',rehab:'Spanish squat 3×60s',rir:'0–1',restDisplay:'1m15',restSec:75,note:'⚠️ Tension épaule : 4 kg (voire 3), RPE 6–7 max.'},
-    {id:'h6',ss:'C2',machine:true,name:'Reverse fly unilatéral poulie',sets:'3×12–20',ref:'Réglage 16',rir:'0–1',restDisplay:'1m',restSec:60,note:'Épaule basse, loin de l\'oreille. Arrêt quand le bras arrive sur la ligne des épaules.'},
-    {id:'h7',ss:'D1',name:'Curl incliné',sets:'3×10–12',ref:'Banc 45–60°',rir:'0–1',restDisplay:'45s',restSec:45},
+    {id:'h2',ss:'A2',machine:true,name:'Tirage vertical variante',sets:'3×8–12',ref:'Barre droite, supination, mains largeur d\'épaules',rir:'1',restDisplay:'1m15',restSec:75,note:'Sans sangles. Bras tendus en haut autorisés, omoplates engagées.'},
+    {id:'h4',ss:'B1',machine:true,name:'Chest fly machine',sets:'3×12–15',ref:'Siège pos. 5/6/7 · fixation 8',rir:'0–1',restDisplay:'1m',restSec:60,note:'Omoplates en arrière ET basses, fixes pendant toute la série : seul le bras bouge. Mains jointes sans enrouler les épaules. Retour jusqu\'à l\'alignement de la poitrine, pas plus.'},
+    {id:'h3',ss:'B2',name:'Row unilatéral haltère',sets:'3×10–12',ref:'24 kg (validé le 16/11)',rir:'1',restDisplay:'1m',restSec:60,note:'Buste fixe sans pivoter, coude près du corps, tirer vers la hanche, sans sangles. Si le buste tourne en fin de série : 22 kg.'},
+    {id:'h5',ss:'C1',name:'Élévations latérales',sets:'3×15–20',ref:'—',rehab:'Spanish squat 3×60s',rir:'0–1',restDisplay:'1m15',restSec:75,note:'Épaules basses, arrêt juste sous la hauteur des épaules. Si la nuque ou le trapèze tire : plus léger.'},
+    {id:'h12',ss:'C2',name:'Reverse fly haltères, poitrine sur banc',sets:'3×12–20',ref:'Banc incliné 30–45° · 4–6 kg',rir:'0–1',restDisplay:'1m',restSec:60,note:'Remplace le reverse fly unilatéral poulie (avant de l\'épaule, 23/11). À introduire seul quand l\'épaule est calme : 2 séries légères la 1re fois. Bras presque tendus, arrêt dans le prolongement des épaules.'},
+    {id:'h11',ss:'D1',name:'Curl EZ debout',sets:'3×10–12',ref:'Barre 10 kg',rir:'2',restDisplay:'45s',restSec:45,note:'Remplace le curl incliné, en pause depuis le 23/11 (avant de l\'épaule). Coudes collés au corps, sans élan. Le curl incliné reviendra en dernier.'},
     {id:'h8',ss:'D2',machine:true,name:'Triceps corde',sets:'3×12–15',ref:'—',rir:'0–1',restDisplay:'45s',restSec:45,note:'Poignet fixe en bas.'},
-    {id:'h9',machine:true,name:'Cable crunch',sets:'3×10–15',ref:'—',rir:'1',restDisplay:'1m',restSec:60,note:'Hanches fixes.'},
+    {id:'h9',machine:true,name:'Cable crunch',sets:'3×10–15',ref:'—',rir:'1',restDisplay:'1m',restSec:60,note:'Hanches fixes. En superset avec la presse ou la fente arrière.'},
   ]},
-  { id:'rehab', name:'JAMBES', subtitle:'Fin de séance · presse et sit-to-stand en alternance', color:'#10b981', exercises:[
+  { id:'rehab', name:'JAMBES', subtitle:'Presse et fente arrière en alternance · Spanish squat à chaque séance', color:'#10b981', exercises:[
     {id:'r3',name:'Marche inclinée',sets:'1×5min',ref:'Inclinaison 7% · 5 km/h',unit:'min',trackWeight:false,restDisplay:'—',restSec:0,note:'En échauffement, au début de la séance.'},
     {id:'r1',name:'Spanish squat',sets:'3×60s',ref:'Intercalé pendant les élévations latérales',unit:'sec',trackWeight:false,restDisplay:'1m',restSec:60},
-    {id:'r4',machine:true,name:'Presse à cuisses',sets:'3×12',ref:'52 kg à Motte-Picquet · +1 cran si les 2 jours suivants sont calmes',unit:'reps',restDisplay:'2m',restSec:120,note:'Une séance sur deux, en alternance avec le sit-to-stand. Pieds au milieu, largeur de bassin. Descente en 3 s jusqu\'à 90° max, ne pas verrouiller en haut. Stop si la hanche droite se manifeste.'},
-    {id:'r2',name:'Sit-to-stand',sets:'3×12',ref:'20 kg (haltère/sac contre la poitrine)',unit:'reps',restDisplay:'1m',restSec:60,note:'Une séance sur deux, en alternance avec la presse. Descente lente et freinée, ne pas s\'affaler.'},
+    {id:'r4',machine:true,name:'Presse à cuisses',sets:'3×12',ref:'113 kg (250 lbs) à Motte-Picquet · palier suivant si les 2 jours d\'après sont calmes',unit:'reps',restDisplay:'2m',restSec:120,note:'Une séance sur deux, en alternance avec la fente arrière. On monte tant qu\'il reste 2–3 reps en réserve sur les 12 ; sinon on stabilise. Pieds au milieu, largeur de bassin. Descente en 3 s jusqu\'à 90° max, ne pas verrouiller en haut. Stop si la hanche droite se manifeste.'},
+    {id:'r5',name:'Fente arrière',sets:'3×8–10',ref:'Par jambe · poids du corps, puis haltères',unit:'reps',restDisplay:'1m',restSec:60,note:'Une séance sur deux, en alternance avec la presse. Reps = par jambe. Pas en arrière, descente lente (3 s), genou avant au-dessus du pied. Charge à inscrire = poids d\'UN haltère (0 au poids du corps). Objectif de l\'étape : 2 × 12 kg sans douleur, genou calme le lendemain.'},
+    {id:'r6',name:'Test squat sur une jambe',sets:'1 test/sem.',ref:'Douleur sous la rotule, de 0 à 10',unit:'douleur /10',trackWeight:false,restDisplay:'—',restSec:0,note:'Une fois par semaine. Squat lent sur une jambe jusqu\'à ~60°, en te tenant à un appui. Note la douleur la plus forte des deux genoux. Pour passer aux sauts : 2/10 maximum, stable ou en baisse.'},
   ]},
 ];
 
 // Exercices retirés du programme : gardés pour l'affichage de l'historique
 const RETIRED = {
+  f7:{name:'Curl incliné',hw:true,unit:'reps'},
+  h7:{name:'Curl incliné',hw:true,unit:'reps'},
+  h6:{name:'Reverse fly unilatéral poulie',hw:true,unit:'reps'},
+  r2:{name:'Sit-to-stand',hw:true,unit:'reps'},
   f9:{name:'Knee raise au sol',hw:false,unit:'reps'},
   v10:{name:'Knee raise au sol',hw:false,unit:'reps'},
   h10:{name:'Knee raise au sol',hw:false,unit:'reps'},
@@ -258,9 +263,10 @@ const NUTRI = [
   ]},
   {label:'PILOTAGE', color:'#3b82f6', items:[
     ['Objectif','+0,2–0,3 kg / semaine'],
-    ['Référence','82,4 kg (moyenne 7–14 oct.)'],
+    ['Référence','84,2 kg (moy. 9–15 nov.) · 88,5 cm'],
     ['Si stagnation 2 sem.','+150–200 kcal'],
     ['Si >0,4–0,5 kg/sem','−150 kcal'],
+    ['Si taille ≥ 90 cm sur 2 mesures','−150 kcal'],
     ['Juge de paix','moyenne 7 j + tour de taille'],
   ]},
   {label:'ASTUCES', color:'#a855f7', items:[
@@ -712,13 +718,16 @@ function rehabBlock(ex){
 }
 
 function warmupBlock(ex, accent){
-  const raw=(lastWeights[canonicalKey(ex.id)]||'').toString().replace(',','.');
+  // Machines : la charge est mémorisée par club (clé "exo@club"), pas sous l'id seul
+  let src=lastWeights[weightKey(ex.id)], other=false;
+  if(!src){ const lh=lastHistoryFor(ex.id); if(lh && lh.sets.length){ src=lh.sets[lh.sets.length-1].w; other=!!lh.fallback; } }
+  const raw=(src||'').toString().replace(',','.');
   const w=parseFloat(raw);
   const has = w && w>0;
   const fmtKg = x => (Math.round(x*4)/4).toString().replace('.',',');
   return `<div style="background:#0b1220;border:1px solid #1e293b;border-radius:8px;padding:9px 11px;margin:8px 0">
     <div style="font-size:9px;color:#334155;text-transform:uppercase;letter-spacing:.1em;margin-bottom:7px">
-      Échauffement · séries montantes${has?` <span style="color:#475569;text-transform:none;letter-spacing:0">(base ${fmtKg(w)} kg)</span>`:''}
+      Échauffement · séries montantes${has?` <span style="color:#475569;text-transform:none;letter-spacing:0">(base ${fmtKg(w)} kg${other?', repère d\'un autre club':''})</span>`:''}
     </div>
     ${WARMUP_STEPS.map((s,i)=>`
       <div class="set-row" style="margin-bottom:5px">
@@ -803,13 +812,14 @@ function addWeightEntry(){
 function deleteWeightEntry(idx){
   if(confirm('Supprimer cette pesée ?')){ bodyWeights.splice(idx,1); save(); renderWeight(); }
 }
-function weightChartSVG(entries, key, color){
-  key = key || 'weight'; color = color || '#06b6d4';
+function weightChartSVG(entries, key, color, minSpan){
+  key = key || 'weight'; color = color || '#06b6d4'; minSpan = minSpan || 2;
   if(entries.length<2) return '';
   const W=100, H=100, PAD=6;
   const ws=entries.map(e=>e[key]);
   let min=Math.min(...ws), max=Math.max(...ws);
-  if(min===max){ min-=1; max+=1; }
+  // Échelle minimale : un écart de 0,5 cm ne doit pas ressembler à une chute
+  if(max-min<minSpan){ const mid=(max+min)/2; min=mid-minSpan/2; max=mid+minSpan/2; }
   const range=max-min;
   const stepX=(W-PAD*2)/(entries.length-1);
   const pts=entries.map((e,i)=>{
@@ -950,7 +960,7 @@ function renderWeight(){
     </div>`;
   }
 
-  if(wa.length>=2){ html+=`<div class="weight-chart-wrap">${weightChartSVG(wa.slice(-20),'cm','#f59e0b')}</div>`; }
+  if(wa.length>=2){ html+=`<div class="weight-chart-wrap">${weightChartSVG(wa.slice(-20),'cm','#f59e0b',4)}</div>`; }
 
   const rd=bodyRead();
   if(rd.ready){
